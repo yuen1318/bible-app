@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#09090b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Sacred Scripture – An offline sanctuary for prayer and scripture reading">
+    <title>Sacred Scripture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #09090b;
+            --bg-card: #18181b;
+            --bg-card-hover: #1f1f23;
+            --bg-elevated: #1c1c20;
+            --border: #27272a;
+            --border-light: #2e2e33;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #c9a84c;
+            --accent-glow: #e8c860;
+            --accent-subtle: rgba(201, 168, 76, 0.12);
+            --danger: #7f1d1d;
+            --danger-text: #fca5a5;
+            --radius-sm: 0.5rem;
+            --radius: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.25rem;
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+            --shadow-elevated: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 32px rgba(0, 0, 0, 0.4);
+            --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-serif: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
+        }
+
+        [data-theme="light"] {
+            --bg: #f8f8f7;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f0f0ee;
+            --bg-elevated: #ffffff;
+            --border: #e4e4e2;
+            --border-light: #d4d4d2;
+            --text-primary: #1a1a1a;
+            --text-secondary: #525252;
+            --text-muted: #737373;
+            --accent: #92700c;
+            --accent-glow: #b8860b;
+            --accent-subtle: rgba(146, 112, 12, 0.1);
+            --danger: #fecaca;
+            --danger-text: #991b1b;
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-elevated: 0 2px 6px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overscroll-behavior: none;
+        }
+
+        /* Scrollable areas allow selection */
+        .allow-select {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        /* Screen container */
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            transform: translateY(8px);
+            overflow: hidden;
+        }
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* ============ DOWNLOAD SCREEN ============ */
+        #download-screen {
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem;
+            text-align: center;
+        }
+        #download-screen .icon-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #download-screen .cross-icon {
+            color: var(--accent);
+            animation: breathe 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 24px rgba(201, 168, 76, 0.4));
+        }
+        @keyframes breathe {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.85;
+            }
+            50% {
+                transform: scale(1.12);
+                opacity: 1;
+            }
+        }
+        #download-screen .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            opacity: 0;
+            animation: pulse-ring 2.5s ease-out infinite;
+        }
+        #download-screen .pulse-ring:nth-child(2) {
+            animation-delay: 0.8s;
+        }
+        #download-screen .pulse-ring:nth-child(3) {
+            animation-delay: 1.6s;
+        }
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.6);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+        #download-screen h2 {
+            font-size: 1.35rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+        #download-screen .status-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            max-width: 280px;
+            line-height: 1.5;
+        }
+        #download-screen .progress-container {
+            width: 220px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        #download-screen .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 99px;
+            transition: width 0.3s ease;
+            width: 0%;
+            box-shadow: 0 0 12px rgba(201, 168, 76, 0.5);
+        }
+        #download-screen .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+        }
+        #download-screen .verse-preview {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            max-width: 300px;
+            line-height: 1.6;
+            opacity: 0.7;
+            transition: opacity 1s ease;
+            min-height: 40px;
+        }
+
+        /* ============ HOME SCREEN ============ */
+        #home-screen {
+            align-items: center;   /* ← FIX: center the content horizontally */
+            padding: 1.5rem;
+            gap: 1.25rem;
+            justify-content: center;
+        }
+        #home-screen .app-header {
+            text-align: center;
+            padding: 1rem 0 0.5rem;
+        }
+        #home-screen .app-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+        #home-screen .app-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        #home-screen .quick-access {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        #home-screen .quick-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+        #home-screen .quick-card:active {
+            transform: scale(0.97);
+            background: var(--bg-card-hover);
+            border-color: var(--border-light);
+        }
+        #home-screen .quick-card .card-icon {
+            color: var(--accent);
+            transition: transform var(--transition);
+        }
+        #home-screen .quick-card:active .card-icon {
+            transform: scale(1.1);
+        }
+        #home-screen .quick-card .card-label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+        #home-screen .quick-card .card-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        #home-screen .wifi-banner {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 400px;
+            width: 100%;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            box-shadow: var(--shadow-card);
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: left;
+        }
+        #home-screen .wifi-banner .banner-icon {
+            flex-shrink: 0;
+            color: var(--text-muted);
+        }
+        #home-screen .wifi-banner .dismiss {
+            margin-left: auto;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: color var(--transition);
+        }
+        #home-screen .wifi-banner .dismiss:hover {
+            color: var(--text-primary);
+        }
+        #home-screen .wifi-banner.hidden {
+            display: none;
+        }
+        #home-screen .prayer-prompt {
+            text-align: center;
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            max-width: 350px;
+            line-height: 1.6;
+            padding: 0.5rem;
+        }
+
+        /* ============ BIBLE SCREEN ============ */
+        #bible-screen {
+            display: flex;
+            flex-direction: column;
+        }
+        #bible-screen.active {
+            display: flex;
+        }
+        .bible-topbar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        .bible-topbar .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.4rem 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition);
+            line-height: 1;
+        }
+        .bible-topbar .back-btn:active {
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+        .bible-topbar .book-selector {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.55rem 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            font-family: var(--font-sans);
+            appearance: none;
+            -webkit-appearance: none;
+            transition: all var(--transition);
+            max-width: 200px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .bible-topbar .book-selector:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+        .chapter-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .chapter-nav .ch-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-family: var(--font-sans);
+        }
+        .chapter-nav .ch-btn:active {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+        }
+        .chapter-nav .ch-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            min-width: 50px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .bible-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem 1rem 2rem;
+            -webkit-overflow-scrolling: touch;
+        }
+        .bible-content .verse {
+            font-family: var(--font-sans);
+            font-size: 1.15rem;
+            line-height: 1.85;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            padding: 0.3rem 0.4rem;
+            border-radius: var(--radius-sm);
+            transition: background var(--transition);
+        }
+        .bible-content .verse .verse-num {
+            font-size: 0.7rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-right: 0.35rem;
+            vertical-align: super;
+            font-family: var(--font-sans);
+        }
+        .bible-content .verse:target {
+            background: var(--accent-subtle);
+            animation: highlight-fade 2s ease-out;
+        }
+        @keyframes highlight-fade {
+            0% {
+                background: rgba(201, 168, 76, 0.25);
+            }
+            100% {
+                background: transparent;
+            }
+        }
+        .bible-content .chapter-heading {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.02em;
+        }
+        .bible-bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .bible-bottom-bar .font-size-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            width: 38px;
+            height: 38px;
+            border-radius: 99px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .bible-bottom-bar .font-size-btn:active {
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+        .bible-bottom-bar .font-size-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ============ DAILY READINGS SCREEN ============ */
+        #daily-screen {
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+        }
+        #daily-screen .placeholder-icon {
+            color: var(--text-muted);
+        }
+        #daily-screen h3 {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        #daily-screen p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            max-width: 280px;
+        }
+        #daily-screen .back-btn-bottom {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.7rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: var(--font-sans);
+            transition: all var(--transition);
+            box-shadow: var(--shadow-card);
+        }
+        #daily-screen .back-btn-bottom:active {
+            background: var(--bg-card-hover);
+        }
+
+        /* Scrollbar styling */
+        .bible-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .bible-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .bible-content::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 99px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            z-index: 100;
+            box-shadow: var(--shadow-elevated);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            text-align: center;
+            max-width: 90vw;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            border-radius: 99px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-card);
+            z-index: 20;
+        }
+        .theme-toggle:active {
+            transform: scale(0.92);
+            border-color: var(--accent);
+        }
+
+        /* ============ OFFLINE LOCK SCREEN ============ */
+        #offline-lock {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+        #offline-lock.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #offline-lock .lock-icon {
+            color: var(--accent);
+            animation: breathe 3s ease-in-out infinite;
+        }
+        #offline-lock h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        #offline-lock p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            max-width: 300px;
+        }
+        #offline-lock .lock-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--danger-text);
+            background: var(--danger);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+        }
+        #offline-lock .lock-status.offline {
+            color: var(--accent);
+            background: var(--accent-subtle);
+        }
+        #offline-lock .confirm-btn {
+            background: var(--accent);
+            border: none;
+            color: #000;
+            padding: 0.85rem 2rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: var(--font-sans);
+            transition: all var(--transition);
+            box-shadow: var(--shadow-card);
+        }
+        #offline-lock .confirm-btn:active {
+            transform: scale(0.96);
+        }
+        #offline-lock .confirm-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+        /* Responsive */
+        @media (min-width: 480px) {
+            #home-screen .quick-access {
+                max-width: 420px;
+                gap: 1.25rem;
+            }
+            #home-screen .quick-card {
+                padding: 2.5rem 1.5rem;
+            }
+            .bible-content {
+                padding: 1.5rem 1.5rem 2.5rem;
+            }
+            .bible-content .verse {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== DOWNLOAD SCREEN ==================== -->
+    <div class="screen active" id="download-screen">
+        <div class="icon-container">
+            <span class="cross-icon"><svg width="56" height="56" viewBox="0 0 56 56" fill="none"><path d="M28 8v40M14 24h28" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg></span>
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring"></div>
+        </div>
+        <h2>Preparing Your Sanctuary</h2>
+        <p class="status-text" id="download-status">Downloading sacred scripture for offline reading…</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p class="progress-text" id="progress-text">Connecting…</p>
+        <p class="verse-preview" id="verse-preview"></p>
+    </div>
+
+    <!-- ==================== HOME SCREEN ==================== -->
+    <div class="screen" id="home-screen">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <div class="app-header">
+            <div class="app-title">Disconnect to Reconnect</div>
+            <div class="app-subtitle">Your offline sacred space</div>
+        </div>
+        <div class="quick-access">
+            <div class="quick-card" id="card-bible" role="button" aria-label="Open Bible">
+                <span class="card-icon"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M12 6v7"/><path d="M9 9h6"/></svg></span>
+                <span class="card-label">Bible</span>
+                <span class="card-hint">Read Scripture</span>
+            </div>
+            <div class="quick-card" id="card-daily" role="button" aria-label="Daily Readings">
+                <span class="card-icon"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg></span>
+                <span class="card-label">Daily Readings</span>
+                <span class="card-hint">Coming soon</span>
+            </div>
+        </div>
+        <div class="wifi-banner" id="wifi-banner">
+            <span class="banner-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17h.01"/><path d="M12.5 21.5l-1-1a5.44 5.44 0 0 1 7 0l-1 1"/><path d="M2 8.82a15.09 15.09 0 0 1 20 0"/><path d="M5 12.86a10.06 10.06 0 0 1 14 0"/><line x1="2" y1="2" x2="22" y2="22"/></svg></span>
+            <span>For uninterrupted prayer time, consider disconnecting from WiFi</span>
+            <span class="dismiss" id="dismiss-banner" aria-label="Dismiss">×</span>
+        </div>
+        <p class="prayer-prompt">"Be still, and know that I am God."<br>— Psalm 46:10</p>
+    </div>
+
+    <!-- ==================== BIBLE SCREEN ==================== -->
+    <div class="screen" id="bible-screen">
+        <div class="bible-topbar">
+            <button class="back-btn" id="bible-back-btn" aria-label="Back to home">←</button>
+            <select class="book-selector" id="book-selector" aria-label="Select book"></select>
+            <div class="chapter-nav">
+                <button class="ch-btn" id="ch-prev" aria-label="Previous chapter">‹</button>
+                <span class="ch-label" id="ch-label">1</span>
+                <button class="ch-btn" id="ch-next" aria-label="Next chapter">›</button>
+            </div>
+        </div>
+        <div class="bible-content allow-select" id="bible-content">
+            <div class="chapter-heading" id="chapter-heading"></div>
+            <div id="verses-container"></div>
+        </div>
+        <div class="bible-bottom-bar">
+            <button class="font-size-btn" id="font-smaller" aria-label="Decrease font size">A−</button>
+            <span class="font-size-label" id="font-size-label">Standard</span>
+            <button class="font-size-btn" id="font-larger" aria-label="Increase font size">A+</button>
+        </div>
+    </div>
+
+    <!-- ==================== DAILY READINGS SCREEN ==================== -->
+    <div class="screen" id="daily-screen">
+        <span class="placeholder-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        <h3>Daily Readings</h3>
+        <p>Daily liturgical readings will be available here soon. This feature is being prepared for you.</p>
+        <button class="back-btn-bottom" id="daily-back-btn">← Back to Home</button>
+    </div>
+
+    <!-- ==================== OFFLINE LOCK SCREEN ==================== -->
+    <div id="offline-lock">
+        <span class="lock-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></span>
+        <h2>Disconnect to Begin</h2>
+        <p>To help you focus on Scripture without distractions, please turn off your WiFi or mobile data.</p>
+        <div class="lock-status" id="lock-status">
+            <span id="lock-status-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+            <span id="lock-status-text">You are still connected</span>
+        </div>
+        <button class="confirm-btn" id="lock-confirm-btn" disabled>I'm Disconnected — Continue</button>
+
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="nabre.js"></script>
+    <script>
+        (function() {
+            // ============ DOM REFS ============
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            const downloadScreen = $('#download-screen');
+            const homeScreen = $('#home-screen');
+            const bibleScreen = $('#bible-screen');
+            const dailyScreen = $('#daily-screen');
+            const progressBar = $('#progress-bar');
+            const progressText = $('#progress-text');
+            const downloadStatus = $('#download-status');
+            const versePreview = $('#verse-preview');
+            const wifiBanner = $('#wifi-banner');
+            const toast = $('#toast');
+            const bookSelector = $('#book-selector');
+            const chLabel = $('#ch-label');
+            const chapterHeading = $('#chapter-heading');
+            const versesContainer = $('#verses-container');
+            const bibleContent = $('#bible-content');
+            const fontLabel = $('#font-size-label');
+
+            // ============ DETECT FILE:// PROTOCOL ============
+            const IS_FILE_PROTOCOL = location.protocol === 'file:';
+
+            // ============ DYNAMIC WEB APP MANIFEST (SKIP ON FILE://) ============
+            if (!IS_FILE_PROTOCOL) {
+                const manifestData = {
+                    name: 'Sacred Scripture',
+                    short_name: 'Scripture',
+                    description: 'An offline sanctuary for prayer and scripture reading',
+                    start_url: '/',
+                    display: 'standalone',
+                    theme_color: '#09090b',
+                    background_color: '#09090b',
+                    icons: [
+                        {
+                            src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%2309090b'/%3E%3Cpath d='M96 28v136M60 72h72' stroke='%23c9a84c' stroke-width='12' stroke-linecap='round'/%3E%3C/svg%3E",
+                            sizes: '192x192',
+                            type: 'image/svg+xml',
+                            purpose: 'any'
+                        },
+                        {
+                            src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%2309090b'/%3E%3Cpath d='M256 74v364M160 192h192' stroke='%23c9a84c' stroke-width='28' stroke-linecap='round'/%3E%3C/svg%3E",
+                            sizes: '512x512',
+                            type: 'image/svg+xml',
+                            purpose: 'any'
+                        }
+                    ]
+                };
+                const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+                const manifestUrl = URL.createObjectURL(manifestBlob);
+                const link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = manifestUrl;
+                document.head.appendChild(link);
+            }
+
+            // ============ APP STATE ============
+            const APP_STATE = {
+                bibleData: null,
+                books: [],
+                currentBookIndex: 0,
+                currentChapter: 1,
+                fontSize: 16,
+                fontSizeSteps: [14, 16, 18, 20, 22],
+                fontSizeLabels: ['Small', 'Standard', 'Medium', 'Large', 'X-Large'],
+                fontSizeIdx: 1,
+                isDownloaded: false,
+                isOnline: navigator.onLine,
+            };
+
+            // ============ VERSE FRAGMENTS FOR LOADING SCREEN ============
+            const verseFragments = [
+                { text: "In the beginning, God created the heavens and the earth.", ref: "Genesis 1:1" },
+                { text: "The Lord is my shepherd; I shall not want.", ref: "Psalm 23:1" },
+                { text: "Be still, and know that I am God.", ref: "Psalm 46:10" },
+                { text: "I can do all things through him who strengthens me.", ref: "Philippians 4:13" },
+                { text: "For God so loved the world that he gave his only Son…", ref: "John 3:16" },
+                { text: "The light shines in the darkness, and the darkness has not overcome it.", ref: "John 1:5" },
+                { text: "Come to me, all who labor and are heavy laden…", ref: "Matthew 11:28" },
+                { text: "Faith, hope, and love abide, these three; but the greatest of these is love.", ref: "1 Corinthians 13:13" },
+            ];
+
+            function rotateVersePreview() {
+                const v = verseFragments[Math.floor(Math.random() * verseFragments.length)];
+                versePreview.textContent = `"${v.text}" — ${v.ref}`;
+            }
+            rotateVersePreview();
+            const verseRotator = setInterval(rotateVersePreview, 5000);
+
+            // ============ SCREEN MANAGEMENT ============
+            function showScreen(screen) {
+                [downloadScreen, homeScreen, bibleScreen, dailyScreen].forEach(s => s.classList.remove('active'));
+                screen.classList.add('active');
+                if (screen === bibleScreen) {
+                    bibleContent.scrollTop = 0;
+                }
+            }
+
+            // ============ TOAST ============
+            let toastTimer;
+            function showToast(msg) {
+                clearTimeout(toastTimer);
+                toast.textContent = msg;
+                toast.classList.add('show');
+                toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+            }
+
+            // ============ CACHE & STORAGE (FIXED FOR FILE://) ============
+            async function openIDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('SacredScriptureDB', 1);
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('bible')) {
+                            db.createObjectStore('bible', { keyPath: 'id' });
+                        }
+                        if (!db.objectStoreNames.contains('prefs')) {
+                            db.createObjectStore('prefs', { keyPath: 'id' });
+                        }
+                    };
+                    request.onsuccess = (e) => resolve(e.target.result);
+                    request.onerror = (e) => reject(e.target.error);
+                });
+            }
+
+            async function storeInIDB(jsonData) {
+                const db = await openIDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction('bible', 'readwrite');
+                    const store = tx.objectStore('bible');
+                    store.put({ id: 'nabre', data: jsonData, timestamp: Date.now() });
+                    tx.oncomplete = resolve;
+                    tx.onerror = reject;
+                });
+            }
+
+            async function getFromIDB() {
+                const db = await openIDB();
+                return new Promise((resolve) => {
+                    const tx = db.transaction('bible', 'readonly');
+                    const store = tx.objectStore('bible');
+                    const request = store.get('nabre');
+                    request.onsuccess = () => {
+                        resolve(request.result ? request.result.data : null);
+                    };
+                    request.onerror = () => resolve(null);
+                });
+            }
+
+            async function cacheBibleData(jsonData) {
+                // Always store in IndexedDB (works everywhere)
+                await storeInIDB(jsonData);
+                // Only use Cache API if not on file://
+                if (!IS_FILE_PROTOCOL) {
+                    try {
+                        const cache = await caches.open('sacred-scripture-v2');
+                        const response = new Response(JSON.stringify(jsonData), {
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        await cache.put('/bible-data', response);
+                    } catch (e) {
+                        console.warn('Cache API storage skipped. Using IndexedDB only.');
+                    }
+                }
+            }
+
+            async function getCachedBibleData() {
+                // Try Cache API first if not file://
+                if (!IS_FILE_PROTOCOL) {
+                    try {
+                        const cache = await caches.open('sacred-scripture-v2');
+                        const response = await cache.match('/bible-data');
+                        if (response) return await response.json();
+                    } catch (e) { /* fall through */ }
+                }
+                // Fallback to IndexedDB
+                return await getFromIDB();
+            }
+
+            async function savePrefs() {
+                const db = await openIDB();
+                const prefs = {
+                    id: 'user-prefs',
+                    bookIndex: APP_STATE.currentBookIndex,
+                    chapter: APP_STATE.currentChapter,
+                    fontSizeIdx: APP_STATE.fontSizeIdx,
+                };
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction('prefs', 'readwrite');
+                    const store = tx.objectStore('prefs');
+                    store.put(prefs);
+                    tx.oncomplete = resolve;
+                    tx.onerror = reject;
+                });
+            }
+
+            async function loadPrefs() {
+                try {
+                    const db = await openIDB();
+                    return new Promise((resolve) => {
+                        const tx = db.transaction('prefs', 'readonly');
+                        const store = tx.objectStore('prefs');
+                        const request = store.get('user-prefs');
+                        request.onsuccess = () => resolve(request.result || null);
+                        request.onerror = () => resolve(null);
+                    });
+                } catch {
+                    return null;
+                }
+            }
+
+            // ============ BIBLE DATA PARSING (FIXED FOR NABRE FORMAT) ============
+            // NABRE JSON verses are objects: { "text": "...", "verse": 1, "type": "...", "chapter": 1 }
+            // This function normalizes any chapter array into an array of strings.
+            function normalizeChapter(chapterArray) {
+                if (!Array.isArray(chapterArray)) return [];
+                return chapterArray.map(verse => {
+                    if (typeof verse === 'string') return verse;
+                    if (typeof verse === 'object' && verse !== null) {
+                        // Most common case: { text: "..." }
+                        if (typeof verse.text === 'string') return verse.text;
+                        // Fallback: maybe the object only has a numeric key like { 1: "text" }
+                        const keys = Object.keys(verse);
+                        if (keys.length === 1 && !isNaN(parseInt(keys[0]))) {
+                            return String(verse[keys[0]]);
+                        }
+                        // Last resort
+                        return String(verse);
+                    }
+                    return String(verse);
+                });
+            }
+
+            function parseBibleData(json) {
+                let books = [];
+
+                // NABRE format: array of { book, chapters: [{ chapter, verses: [{ verse, text }] }] }
+                if (Array.isArray(json) && json.length > 0 && json[0].book && json[0].chapters) {
+                    books = json.map(b => ({
+                        name: b.book,
+                        abbreviation: b.book.substring(0, 3),
+                        chapters: b.chapters.map(ch => {
+                            if (Array.isArray(ch.verses)) {
+                                return ch.verses.map(v => typeof v === 'object' ? v.text : String(v));
+                            }
+                            return normalizeChapter(ch);
+                        }),
+                    }));
+                }
+                // Detect structure: { books: [...] }
+                else if (json.books && Array.isArray(json.books)) {
+                    books = json.books.map((b, i) => ({
+                        name: b.name || b.book || `Book ${i}`,
+                        abbreviation: b.abbreviation || b.abbr || (b.name ? b.name.substring(0, 3) : ''),
+                        chapters: Array.isArray(b.chapters) ? b.chapters.map(normalizeChapter) : [],
+                    }));
+                }
+                // Detect structure: object keyed by book abbreviation
+                else if (typeof json === 'object' && json !== null && !Array.isArray(json)) {
+                    const keys = Object.keys(json);
+                    const sample = json[keys[0]];
+                    if (sample && (sample.chapters || sample.name)) {
+                        books = keys.map(k => {
+                            const b = json[k];
+                            let chapters = [];
+                            if (b.chapters) {
+                                if (Array.isArray(b.chapters)) {
+                                    chapters = b.chapters.map(normalizeChapter);
+                                } else if (typeof b.chapters === 'object') {
+                                    const chKeys = Object.keys(b.chapters).sort((a, b) => parseInt(a) - parseInt(b));
+                                    chapters = chKeys.map(ck => {
+                                        const ch = b.chapters[ck];
+                                        if (Array.isArray(ch)) return normalizeChapter(ch);
+                                        if (typeof ch === 'object' && ch !== null) {
+                                            const vKeys = Object.keys(ch).sort((a, b) => parseInt(a) - parseInt(b));
+                                            return vKeys.map(vk => {
+                                                const v = ch[vk];
+                                                if (typeof v === 'string') return v;
+                                                if (typeof v === 'object' && v.text) return v.text;
+                                                return String(v);
+                                            });
+                                        }
+                                        return [];
+                                    });
+                                }
+                            }
+                            return {
+                                name: b.name || k,
+                                abbreviation: b.abbreviation || k,
+                                chapters: chapters,
+                            };
+                        });
+                    }
+                }
+
+                // Final fallback: array of verses treated as a single book
+                if (books.length === 0 && Array.isArray(json)) {
+                    books = [{ name: 'Scripture', chapters: [normalizeChapter(json)] }];
+                }
+
+                return books;
+            }
+
+            // ============ BIBLE RENDERING ============
+            function getCurrentBook() { return APP_STATE.books[APP_STATE.currentBookIndex] || null; }
+            function getMaxChapter() { const book = getCurrentBook(); return book ? book.chapters.length : 0; }
+            function clampChapter() {
+                const max = getMaxChapter();
+                if (APP_STATE.currentChapter < 1) APP_STATE.currentChapter = 1;
+                if (APP_STATE.currentChapter > max) APP_STATE.currentChapter = max || 1;
+            }
+
+            function renderBookSelector() {
+                bookSelector.innerHTML = '';
+                APP_STATE.books.forEach((book, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = book.name;
+                    if (i === APP_STATE.currentBookIndex) opt.selected = true;
+                    bookSelector.appendChild(opt);
+                });
+            }
+
+            function renderChapter() {
+                clampChapter();
+                const book = getCurrentBook();
+                if (!book) {
+                    versesContainer.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No scripture data loaded.</p>';
+                    return;
+                }
+                const chapterData = book.chapters[APP_STATE.currentChapter - 1] || [];
+                chapterHeading.textContent = `${book.name} ${APP_STATE.currentChapter}`;
+                chLabel.textContent = `Ch ${APP_STATE.currentChapter}`;
+
+                let html = '';
+                // chapterData is now guaranteed to be an array of strings
+                chapterData.forEach((verseText, i) => {
+                    const verseNum = i + 1;
+                    // verseText is a string; if not, convert safely
+                    const safeText = typeof verseText === 'string' ? verseText : String(verseText || '');
+                    html += `<div class="verse" id="v${verseNum}"><span class="verse-num">${verseNum}</span>${safeText}</div>`;
+                });
+
+                if (!html) html = '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No verses in this chapter.</p>';
+                versesContainer.innerHTML = html;
+                bibleContent.scrollTop = 0;
+                updateFontSize();
+            }
+
+            function updateFontSize() {
+                const verses = versesContainer.querySelectorAll('.verse');
+                verses.forEach(v => { v.style.fontSize = APP_STATE.fontSize + 'px'; });
+                chapterHeading.style.fontSize = (APP_STATE.fontSize + 2) + 'px';
+            }
+
+            function navigateChapter(delta) {
+                APP_STATE.currentChapter += delta;
+                clampChapter();
+                renderChapter();
+                savePrefs();
+            }
+
+            function selectBook(index) {
+                APP_STATE.currentBookIndex = parseInt(index);
+                APP_STATE.currentChapter = 1;
+                clampChapter();
+                renderChapter();
+                renderBookSelector();
+                savePrefs();
+            }
+
+            function changeFontSize(delta) {
+                const newIdx = APP_STATE.fontSizeIdx + delta;
+                if (newIdx >= 0 && newIdx < APP_STATE.fontSizeSteps.length) {
+                    APP_STATE.fontSizeIdx = newIdx;
+                    APP_STATE.fontSize = APP_STATE.fontSizeSteps[newIdx];
+                    fontLabel.textContent = APP_STATE.fontSizeLabels[newIdx];
+                    updateFontSize();
+                    savePrefs();
+                }
+            }
+
+            // ============ DOWNLOAD LOGIC ============
+
+            async function downloadBibleData() {
+                downloadStatus.textContent = 'Connecting to scripture repository…';
+                progressText.textContent = 'Establishing connection…';
+                progressBar.style.width = '5%';
+
+                try {
+                    const response = await fetch(BIBLE_URL);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const contentLength = response.headers.get('content-length');
+                    const total = contentLength ? parseInt(contentLength) : 0;
+                    const reader = response.body.getReader();
+                    const chunks = [];
+                    let received = 0;
+
+                    downloadStatus.textContent = 'Downloading sacred scripture…';
+                    progressText.textContent = total ? '0%' : 'Downloading…';
+                    progressBar.style.width = total ? '10%' : '15%';
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        chunks.push(value);
+                        received += value.length;
+                        if (total) {
+                            const pct = Math.round((received / total) * 100);
+                            progressBar.style.width = Math.min(pct, 98) + '%';
+                            progressText.textContent = `${pct}% (${(received / 1024 / 1024).toFixed(1)} MB)`;
+                            downloadStatus.textContent = 'Downloading sacred scripture…';
+                        } else {
+                            progressText.textContent = `Downloading… ${(received / 1024 / 1024).toFixed(1)} MB`;
+                            progressBar.style.width = '60%';
+                        }
+                    }
+
+                    progressBar.style.width = '98%';
+                    progressText.textContent = 'Processing…';
+                    downloadStatus.textContent = 'Processing scripture data…';
+
+                    const blob = new Blob(chunks);
+                    const text = await blob.text();
+                    const json = JSON.parse(text);
+
+                    progressBar.style.width = '99%';
+                    downloadStatus.textContent = 'Storing for offline access…';
+
+                    await cacheBibleData(json);
+
+                    APP_STATE.bibleData = json;
+                    APP_STATE.books = parseBibleData(json);
+                    APP_STATE.isDownloaded = true;
+
+                    progressBar.style.width = '100%';
+                    progressText.textContent = 'Complete ✓';
+                    downloadStatus.textContent = 'Your sanctuary is ready.';
+
+                    clearInterval(verseRotator);
+                    versePreview.textContent = '';
+
+                    setTimeout(() => initializeApp(), 800);
+                } catch (err) {
+                    console.error('Download failed:', err);
+                    downloadStatus.textContent = 'Unable to download. Trying cached data…';
+                    progressText.textContent = 'Checking offline storage…';
+
+                    const cached = await getCachedBibleData();
+                    if (cached) {
+                        APP_STATE.bibleData = cached;
+                        APP_STATE.books = parseBibleData(cached);
+                        APP_STATE.isDownloaded = true;
+                        downloadStatus.textContent = 'Loaded from offline storage.';
+                        progressBar.style.width = '100%';
+                        progressText.textContent = 'Ready (offline) ✓';
+                        clearInterval(verseRotator);
+                        setTimeout(() => initializeApp(), 600);
+                    } else {
+                        downloadStatus.textContent = 'Could not load scripture. Please check your connection and reload.';
+                        progressText.textContent = 'Failed ✗';
+                        progressBar.style.width = '100%';
+                        progressBar.style.background = '#7f1d1d';
+                    }
+                }
+            }
+
+            // ============ INITIALIZATION ============
+            async function initializeApp() {
+                const prefs = await loadPrefs();
+                if (prefs) {
+                    APP_STATE.currentBookIndex = prefs.bookIndex || 0;
+                    APP_STATE.currentChapter = prefs.chapter || 1;
+                    APP_STATE.fontSizeIdx = prefs.fontSizeIdx || 1;
+                    APP_STATE.fontSize = APP_STATE.fontSizeSteps[APP_STATE.fontSizeIdx];
+                    fontLabel.textContent = APP_STATE.fontSizeLabels[APP_STATE.fontSizeIdx];
+                }
+
+                if (!APP_STATE.books || APP_STATE.books.length === 0) {
+                    if (APP_STATE.bibleData) APP_STATE.books = parseBibleData(APP_STATE.bibleData);
+                }
+
+                if (!APP_STATE.books || APP_STATE.books.length === 0) {
+                    showToast('No scripture data available. Please reload.');
+                    return;
+                }
+
+                clampChapter();
+                renderBookSelector();
+                renderChapter();
+                updateFontSize();
+                showScreen(homeScreen);
+                checkWifiBanner();
+
+                // Show offline lock if user is online after data is ready
+                if (navigator.onLine) {
+                    showOfflineLock();
+                }
+            }
+
+            function checkWifiBanner() {
+                if (APP_STATE.isOnline && APP_STATE.isDownloaded) {
+                    wifiBanner.classList.remove('hidden');
+                } else {
+                    wifiBanner.classList.add('hidden');
+                }
+            }
+
+            // ============ EVENT HANDLERS ============
+            $('#card-bible').addEventListener('click', () => {
+                if (!APP_STATE.isDownloaded) { showToast('Scripture is still being prepared…'); return; }
+                renderBookSelector();
+                renderChapter();
+                showScreen(bibleScreen);
+            });
+
+            $('#card-daily').addEventListener('click', () => showScreen(dailyScreen));
+            $('#daily-back-btn').addEventListener('click', () => { showScreen(homeScreen); checkWifiBanner(); });
+            $('#bible-back-btn').addEventListener('click', () => { showScreen(homeScreen); checkWifiBanner(); savePrefs(); });
+            bookSelector.addEventListener('change', (e) => selectBook(e.target.value));
+            $('#ch-prev').addEventListener('click', () => navigateChapter(-1));
+            $('#ch-next').addEventListener('click', () => navigateChapter(1));
+            $('#font-smaller').addEventListener('click', () => changeFontSize(-1));
+            $('#font-larger').addEventListener('click', () => changeFontSize(1));
+            $('#dismiss-banner').addEventListener('click', (e) => {
+                e.stopPropagation();
+                wifiBanner.classList.add('hidden');
+                showToast('May your time be peaceful and undisturbed.');
+            });
+            wifiBanner.addEventListener('click', () => showToast('Consider turning off WiFi for uninterrupted prayer time.'));
+
+            // Theme toggle
+            const themeToggle = $('#theme-toggle');
+            const iconMoon = themeToggle.querySelector('.icon-moon');
+            const iconSun = themeToggle.querySelector('.icon-sun');
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                iconMoon.style.display = theme === 'dark' ? 'block' : 'none';
+                iconSun.style.display = theme === 'light' ? 'block' : 'none';
+                document.querySelector('meta[name="theme-color"]').content = theme === 'light' ? '#f8f8f7' : '#09090b';
+            }
+            function toggleTheme() {
+                const current = document.documentElement.getAttribute('data-theme') || 'dark';
+                const next = current === 'dark' ? 'light' : 'dark';
+                applyTheme(next);
+                localStorage.setItem('scripture-theme', next);
+            }
+            themeToggle.addEventListener('click', toggleTheme);
+            // Load saved theme
+            const savedTheme = localStorage.getItem('scripture-theme') || 'dark';
+            applyTheme(savedTheme);
+
+            window.addEventListener('online', () => { APP_STATE.isOnline = true; checkWifiBanner(); showOfflineLock(); });
+            window.addEventListener('offline', () => { APP_STATE.isOnline = false; checkWifiBanner(); updateLockStatus(); showToast('You are offline — perfect for undisturbed scripture time.'); });
+
+            // ============ OFFLINE LOCK SCREEN ============
+            const offlineLock = $('#offline-lock');
+            const lockStatus = $('#lock-status');
+            const lockStatusText = $('#lock-status-text');
+            const lockConfirmBtn = $('#lock-confirm-btn');
+
+
+            function updateLockStatus() {
+                const lockStatusIcon = $('#lock-status-icon');
+                if (navigator.onLine) {
+                    lockStatus.classList.remove('offline');
+                    lockStatusText.textContent = 'You are still connected';
+                    lockStatusIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+                    lockConfirmBtn.disabled = true;
+                } else {
+                    lockStatus.classList.add('offline');
+                    lockStatusText.textContent = 'You are offline';
+                    lockStatusIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                    lockConfirmBtn.disabled = false;
+                }
+            }
+
+            function showOfflineLock() {
+                if (!APP_STATE.isDownloaded) return;
+                if (!navigator.onLine) return;
+                updateLockStatus();
+                offlineLock.classList.add('active');
+            }
+
+            function hideOfflineLock() {
+                offlineLock.classList.remove('active');
+            }
+
+            lockConfirmBtn.addEventListener('click', () => {
+                if (!navigator.onLine) {
+                    hideOfflineLock();
+                    showToast('God bless your reading time. 🕊️');
+                }
+            });
+
+
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (bibleScreen.classList.contains('active')) {
+                    if (e.key === 'ArrowLeft') navigateChapter(-1);
+                    if (e.key === 'ArrowRight') navigateChapter(1);
+                    if (e.key === 'Escape') { showScreen(homeScreen); checkWifiBanner(); savePrefs(); }
+                }
+            });
+
+            // Swipe navigation
+            let touchStartX = 0;
+            bibleContent.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+            bibleContent.addEventListener('touchend', (e) => {
+                const diff = e.changedTouches[0].clientX - touchStartX;
+                if (Math.abs(diff) > 80) {
+                    if (diff < -60) navigateChapter(1);
+                    else if (diff > 60) navigateChapter(-1);
+                }
+            });
+
+            // ============ SERVICE WORKER (SKIP ON FILE://) ============
+            if (!IS_FILE_PROTOCOL) {
+                const swCode = `
+                    const CACHE_NAME = 'sacred-scripture-v2';
+                    const PRECACHE_URLS = ['/'];
+                    self.addEventListener('install', (event) => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS).catch(() => {}))
+                            .then(() => self.skipWaiting())
+                        );
+                    });
+                    self.addEventListener('activate', (event) => {
+                        event.waitUntil(
+                            caches.keys().then((keys) => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+                            .then(() => self.clients.claim())
+                        );
+                    });
+                    self.addEventListener('fetch', (event) => {
+                        if (event.request.method !== 'GET') return;
+                        const url = new URL(event.request.url);
+                        const isBibleData = url.pathname.includes('nabre.json') || url.href.includes('raw.githubusercontent.com');
+                        if (isBibleData || url.origin === self.location.origin) {
+                            event.respondWith(
+                                caches.match(event.request).then((cached) => {
+                                    if (cached) return cached;
+                                    return fetch(event.request).then((response) => {
+                                        if (response.ok) {
+                                            const clone = response.clone();
+                                            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+                                        }
+                                        return response;
+                                    }).catch(() => caches.match('/bible-data').then(r => r || new Response('Offline - Scripture data not cached yet', { status: 503 })))
+                                })
+                            );
+                        }
+                    });
+                `;
+                try {
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(swBlob);
+                    navigator.serviceWorker.register(swUrl, { scope: '/' }).catch(() => {
+                        navigator.serviceWorker.register('sw.js', { scope: '/' }).catch(() => {});
+                    });
+                } catch (e) {}
+            }
+
+            // ============ PWA INSTALL PROMPT ============
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                setTimeout(() => {
+                    if (APP_STATE.isDownloaded && deferredPrompt) {
+                        showToast('Tap here to install this app for offline use 📲');
+                        toast.addEventListener('click', () => {
+                            deferredPrompt.prompt();
+                            deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+                        }, { once: true });
+                    }
+                }, 3000);
+            });
+            window.addEventListener('appinstalled', () => {
+                deferredPrompt = null;
+                showToast('App installed! You can now use it fully offline. 🕊️');
+            });
+
+            // ============ STARTUP ============
+            async function startup() {
+                // Load directly from the embedded NABRE_DATA variable
+                if (typeof NABRE_DATA !== 'undefined') {
+                    APP_STATE.bibleData = NABRE_DATA;
+                    APP_STATE.books = parseBibleData(NABRE_DATA);
+                    APP_STATE.isDownloaded = true;
+                    progressBar.style.width = '100%';
+                    progressText.textContent = 'Ready ✓';
+                    downloadStatus.textContent = 'Your sanctuary is ready.';
+                    clearInterval(verseRotator);
+                    versePreview.textContent = '';
+                    setTimeout(() => initializeApp(), 500);
+                } else {
+                    // Fallback: try cached data
+                    const cached = await getCachedBibleData();
+                    if (cached) {
+                        APP_STATE.bibleData = cached;
+                        APP_STATE.books = parseBibleData(cached);
+                        APP_STATE.isDownloaded = true;
+                        progressBar.style.width = '100%';
+                        progressText.textContent = 'Ready ✓';
+                        downloadStatus.textContent = 'Your sanctuary is ready.';
+                        clearInterval(verseRotator);
+                        versePreview.textContent = '';
+                        setTimeout(() => initializeApp(), 500);
+                    } else {
+                        downloadStatus.textContent = 'Could not load scripture. Ensure nabre.js is available.';
+                        progressText.textContent = 'Failed ✗';
+                        progressBar.style.width = '100%';
+                        progressBar.style.background = '#7f1d1d';
+                    }
+                }
+                APP_STATE.isOnline = navigator.onLine;
+            }
+
+            startup();
+        })();
+    </script>
+</body>
+</html>
