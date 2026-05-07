@@ -482,40 +482,200 @@
 
         /* ============ DAILY READINGS SCREEN ============ */
         #daily-screen {
+            display: flex;
+            flex-direction: column;
+        }
+        .daily-topbar {
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1.5rem;
-            padding: 2rem;
-            text-align: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
         }
-        #daily-screen .placeholder-icon {
-            color: var(--text-muted);
+        .daily-topbar .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: color var(--transition);
         }
-        #daily-screen h3 {
-            font-size: 1.2rem;
+        .daily-topbar .daily-title {
+            font-size: 1rem;
+            font-weight: 600;
             color: var(--text-primary);
-            font-weight: 500;
         }
-        #daily-screen p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            max-width: 280px;
+        .daily-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
         }
-        #daily-screen .back-btn-bottom {
+        .hidden { display: none !important; }
+
+        /* Calendar */
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .calendar-nav button {
             background: var(--bg-card);
             border: 1px solid var(--border);
             color: var(--text-primary);
-            padding: 0.7rem 1.5rem;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .calendar-nav span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 140px;
+            text-align: center;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+        .calendar-grid .day-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 0.3rem 0;
+            font-weight: 600;
+        }
+        .calendar-grid .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+        }
+        .calendar-grid .day-cell:hover {
+            background: var(--bg-card-hover);
+        }
+        .calendar-grid .day-cell.has-reading {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .calendar-grid .day-cell.today {
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        .calendar-grid .day-cell.selected {
+            background: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+        .calendar-grid .day-cell.empty {
+            pointer-events: none;
+        }
+
+        /* Readings view */
+        .daily-date-header {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        .daily-event-name {
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-bottom: 1.25rem;
+            font-style: italic;
+        }
+        .reading-section {
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            background: var(--bg-card);
+            transition: background var(--transition);
+        }
+        .accordion-header:active {
+            background: var(--bg-card-hover);
+        }
+        .accordion-header .reading-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+        .accordion-header .reading-ref {
+            font-size: 0.8rem;
+            color: var(--accent);
+            flex: 1;
+        }
+        .accordion-icon {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform var(--transition);
+        }
+        .accordion.open .accordion-icon {
+            transform: rotate(90deg);
+        }
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+        .accordion.open .accordion-body {
+            max-height: 2000px;
+        }
+        .reading-section .reading-text {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            padding: 0.75rem 1rem 1rem;
+        }
+        .reading-section .reading-text .verse-num {
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            vertical-align: super;
+            margin-right: 2px;
+        }
+        .reflection-text {
+            font-family: var(--font-serif) !important;
+            font-style: italic;
+            color: var(--text-secondary) !important;
+        }
+        .daily-back-to-cal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.6rem 1.2rem;
             border-radius: var(--radius);
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-family: var(--font-sans);
-            transition: all var(--transition);
-            box-shadow: var(--shadow-card);
-        }
-        #daily-screen .back-btn-bottom:active {
-            background: var(--bg-card-hover);
+            margin-bottom: 2rem;
         }
 
         /* Scrollbar styling */
@@ -707,7 +867,7 @@
             <div class="quick-card" id="card-daily" role="button" aria-label="Daily Readings">
                 <span class="card-icon"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg></span>
                 <span class="card-label">Daily Readings</span>
-                <span class="card-hint">Coming soon</span>
+                <span class="card-hint">Liturgical Calendar</span>
             </div>
         </div>
         <div class="wifi-banner" id="wifi-banner">
@@ -740,10 +900,18 @@
 
     <!-- ==================== DAILY READINGS SCREEN ==================== -->
     <div class="screen" id="daily-screen">
-        <span class="placeholder-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-        <h3>Daily Readings</h3>
-        <p>Daily liturgical readings will be available here soon. This feature is being prepared for you.</p>
-        <button class="back-btn-bottom" id="daily-back-btn">← Back to Home</button>
+        <div class="daily-topbar">
+            <button class="back-btn" id="daily-back-btn" aria-label="Back to home">←</button>
+            <h3 class="daily-title">Daily Readings</h3>
+        </div>
+        <div class="daily-content allow-select" id="daily-content">
+            <div id="daily-calendar"></div>
+            <div id="daily-readings-view" class="hidden">
+                <div class="daily-date-header" id="daily-date-header"></div>
+                <div class="daily-event-name" id="daily-event-name"></div>
+                <div id="daily-passages"></div>
+            </div>
+        </div>
     </div>
 
     <!-- ==================== OFFLINE LOCK SCREEN ==================== -->
@@ -763,6 +931,7 @@
     <div class="toast" id="toast"></div>
 
     <script src="nabre.js"></script>
+    <script src="2026.js"></script>
     <script>
         (function() {
             // ============ DOM REFS ============
@@ -1160,6 +1329,339 @@
                 }
             }
 
+            // ============ DAILY READINGS ============
+            const dailyCalendar = $('#daily-calendar');
+            const dailyReadingsView = $('#daily-readings-view');
+            const dailyDateHeader = $('#daily-date-header');
+            const dailyEventName = $('#daily-event-name');
+            const dailyPassages = $('#daily-passages');
+            let calYear = new Date().getFullYear();
+            let calMonth = new Date().getMonth();
+
+            const BOOK_ALIASES = {
+                'gn': 'Genesis', 'gen': 'Genesis', 'genesis': 'Genesis',
+                'ex': 'Exodus', 'exod': 'Exodus', 'exodus': 'Exodus',
+                'lv': 'Leviticus', 'lev': 'Leviticus', 'leviticus': 'Leviticus',
+                'nm': 'Numbers', 'num': 'Numbers', 'numbers': 'Numbers',
+                'dt': 'Deuteronomy', 'deut': 'Deuteronomy', 'deuteronomy': 'Deuteronomy',
+                'jos': 'Joshua', 'josh': 'Joshua', 'joshua': 'Joshua',
+                'jgs': 'Judges', 'judg': 'Judges', 'judges': 'Judges',
+                'ru': 'Ruth', 'ruth': 'Ruth',
+                '1 sm': '1 Samuel', '1 sam': '1 Samuel', '1 samuel': '1 Samuel',
+                '2 sm': '2 Samuel', '2 sam': '2 Samuel', '2 samuel': '2 Samuel',
+                '1 kgs': '1 Kings', '1 kings': '1 Kings',
+                '2 kgs': '2 Kings', '2 kings': '2 Kings',
+                '1 chr': '1 Chronicles', '1 chronicles': '1 Chronicles',
+                '2 chr': '2 Chronicles', '2 chronicles': '2 Chronicles',
+                'ezr': 'Ezra', 'ezra': 'Ezra',
+                'neh': 'Nehemiah', 'nehemiah': 'Nehemiah',
+                'tb': 'Tobit', 'tob': 'Tobit', 'tobit': 'Tobit',
+                'jdt': 'Judith', 'judith': 'Judith',
+                'est': 'Esther', 'esther': 'Esther',
+                '1 mc': '1 Maccabees', '1 macc': '1 Maccabees', '1 maccabees': '1 Maccabees',
+                '2 mc': '2 Maccabees', '2 macc': '2 Maccabees', '2 maccabees': '2 Maccabees',
+                'jb': 'Job', 'job': 'Job',
+                'ps': 'Psalms', 'psalm': 'Psalms', 'psalms': 'Psalms',
+                'prv': 'Proverbs', 'prov': 'Proverbs', 'proverbs': 'Proverbs',
+                'eccl': 'Ecclesiastes', 'ecclesiastes': 'Ecclesiastes', 'qoh': 'Ecclesiastes',
+                'sg': 'Song of Songs', 'song': 'Song of Songs', 'song of songs': 'Song of Songs', 'songs': 'Song of Songs',
+                'wis': 'Wisdom', 'wisdom': 'Wisdom',
+                'sir': 'Sirach', 'sirach': 'Sirach',
+                'is': 'Isaiah', 'isa': 'Isaiah', 'isaiah': 'Isaiah',
+                'jer': 'Jeremiah', 'jeremiah': 'Jeremiah',
+                'lam': 'Lamentations', 'lamentations': 'Lamentations',
+                'bar': 'Baruch', 'baruch': 'Baruch',
+                'ez': 'Ezekiel', 'ezek': 'Ezekiel', 'ezekiel': 'Ezekiel',
+                'dn': 'Daniel', 'dan': 'Daniel', 'daniel': 'Daniel',
+                'hos': 'Hosea', 'hosea': 'Hosea',
+                'jl': 'Joel', 'joel': 'Joel',
+                'am': 'Amos', 'amos': 'Amos',
+                'ob': 'Obadiah', 'obad': 'Obadiah', 'obadiah': 'Obadiah',
+                'jon': 'Jonah', 'jonah': 'Jonah',
+                'mi': 'Micah', 'mic': 'Micah', 'micah': 'Micah',
+                'na': 'Nahum', 'nah': 'Nahum', 'nahum': 'Nahum',
+                'hb': 'Habakkuk', 'hab': 'Habakkuk', 'habakkuk': 'Habakkuk',
+                'zep': 'Zephaniah', 'zephaniah': 'Zephaniah',
+                'hg': 'Haggai', 'hag': 'Haggai', 'haggai': 'Haggai',
+                'zec': 'Zechariah', 'zech': 'Zechariah', 'zechariah': 'Zechariah',
+                'mal': 'Malachi', 'malachi': 'Malachi',
+                'mt': 'Matthew', 'matt': 'Matthew', 'matthew': 'Matthew',
+                'mk': 'Mark', 'mark': 'Mark',
+                'lk': 'Luke', 'luke': 'Luke',
+                'jn': 'John', 'john': 'John',
+                'acts': 'Acts', 'acts of the apostles': 'Acts',
+                'rom': 'Romans', 'romans': 'Romans',
+                '1 cor': '1 Corinthians', '1 corinthians': '1 Corinthians',
+                '2 cor': '2 Corinthians', '2 corinthians': '2 Corinthians',
+                'gal': 'Galatians', 'galatians': 'Galatians',
+                'eph': 'Ephesians', 'ephesians': 'Ephesians',
+                'phil': 'Philippians', 'philippians': 'Philippians',
+                'col': 'Colossians', 'colossians': 'Colossians',
+                '1 thes': '1 Thessalonians', '1 thessalonians': '1 Thessalonians', '1 thess': '1 Thessalonians',
+                '2 thes': '2 Thessalonians', '2 thessalonians': '2 Thessalonians', '2 thess': '2 Thessalonians',
+                '1 tm': '1 Timothy', '1 tim': '1 Timothy', '1 timothy': '1 Timothy',
+                '2 tm': '2 Timothy', '2 tim': '2 Timothy', '2 timothy': '2 Timothy',
+                'ti': 'Titus', 'titus': 'Titus',
+                'phlm': 'Philemon', 'philemon': 'Philemon',
+                'heb': 'Hebrews', 'hebrews': 'Hebrews',
+                'jas': 'James', 'james': 'James',
+                '1 pt': '1 Peter', '1 pet': '1 Peter', '1 peter': '1 Peter',
+                '2 pt': '2 Peter', '2 pet': '2 Peter', '2 peter': '2 Peter',
+                '1 jn': '1 John', '1 john': '1 John',
+                '2 jn': '2 John', '2 john': '2 John',
+                '3 jn': '3 John', '3 john': '3 John',
+                'jude': 'Jude',
+                'rv': 'Revelation', 'rev': 'Revelation', 'revelation': 'Revelation',
+                'marc': 'Mark', 'mattthew': 'Matthew', 'proverbe': 'Proverbs', 'maccabees': '2 Maccabees'
+            };
+
+            function resolveBookName(raw) {
+                const lower = raw.trim().toLowerCase();
+                if (BOOK_ALIASES[lower]) return BOOK_ALIASES[lower];
+                const found = NABRE_DATA.find(b => b.book.toLowerCase() === lower);
+                return found ? found.book : null;
+            }
+
+            function cleanRef(ref) {
+                // Remove "Cf. " prefix, take first option if pipe-separated, trim
+                let cleaned = ref.trim();
+                cleaned = cleaned.replace(/^Cf\.\s*/i, '');
+                if (cleaned.includes('|')) cleaned = cleaned.split('|')[0].trim();
+                // Convert cross-chapter ranges "Book Ch:V – Ch:V" to semicolons
+                cleaned = cleaned.replace(/\s*–\s*/g, ';');
+                return cleaned;
+            }
+
+            function parseReference(ref) {
+                if (!ref || !ref.trim()) return [];
+                const cleaned = cleanRef(ref);
+                // Split on semicolons
+                const segments = cleaned.split(/;/).map(s => s.trim()).filter(Boolean);
+                const results = [];
+                let lastBook = null;
+                let lastChapter = null;
+                let isCrossChapterRange = cleaned.includes(';') && !cleaned.includes(',') && segments.length === 2;
+
+                for (let i = 0; i < segments.length; i++) {
+                    const seg = segments[i];
+                    // Try "Book Chapter: Verses" (with optional space after colon)
+                    let match = seg.match(/^(.+?)\s+(\d+)\s*:\s*(.+)$/);
+                    if (match) {
+                        lastBook = match[1];
+                        lastChapter = parseInt(match[2]);
+                        results.push({ book: match[1], chapter: lastChapter, versePart: match[3].trim(), isRangeStart: isCrossChapterRange && i === 0, isRangeEnd: isCrossChapterRange && i === 1 });
+                        continue;
+                    }
+                    // Try "Chapter: Verses" (continuation of previous book)
+                    match = seg.match(/^(\d+)\s*:\s*(.+)$/);
+                    if (match && lastBook) {
+                        lastChapter = parseInt(match[1]);
+                        results.push({ book: lastBook, chapter: lastChapter, versePart: match[2].trim(), isRangeStart: false, isRangeEnd: isCrossChapterRange && i === 1 });
+                        continue;
+                    }
+                    // Try just verse numbers (continuation of previous book+chapter) e.g. "5, 6-7"
+                    if (lastBook && lastChapter && /^\d/.test(seg)) {
+                        // Append to previous segment's versePart
+                        if (results.length > 0) {
+                            results[results.length - 1].versePart += ', ' + seg;
+                        }
+                        continue;
+                    }
+                    // Try "Book Chapter" (whole chapter, e.g. "Psalm 37") - optional (number) at end
+                    match = seg.match(/^(.+?)\s+(\d+)(?:\s*\(\d+\))?$/);
+                    if (match) {
+                        lastBook = match[1];
+                        lastChapter = parseInt(match[2]);
+                        results.push({ book: match[1], chapter: lastChapter, versePart: null, isRangeStart: false, isRangeEnd: false });
+                        continue;
+                    }
+                }
+                return results;
+            }
+
+            function parseVerses(versePart) {
+                if (!versePart) return null;
+                const verses = [];
+                const segments = versePart.split(',').map(s => s.trim());
+                for (const seg of segments) {
+                    // Match patterns like "1", "3-4", "1bcde", "3cd-5", "5a", "8b-9"
+                    // Also handles "1-2" within longer string by being flexible
+                    const rangeMatch = seg.match(/^(\d+)[a-z]*(?:\s*[-–]\s*(\d+)[a-z]*)?/);
+                    if (rangeMatch) {
+                        const start = parseInt(rangeMatch[1]);
+                        const end = rangeMatch[2] ? parseInt(rangeMatch[2]) : start;
+                        for (let v = start; v <= end; v++) verses.push(v);
+                    }
+                }
+                return verses.length > 0 ? [...new Set(verses)].sort((a, b) => a - b) : null;
+            }
+
+            function lookupPassage(ref) {
+                const parsed = parseReference(ref);
+                if (!parsed || parsed.length === 0) return null;
+                const allVerses = [];
+                for (const seg of parsed) {
+                    const bookName = resolveBookName(seg.book);
+                    if (!bookName) continue;
+                    const bookData = NABRE_DATA.find(b => b.book === bookName);
+                    if (!bookData) continue;
+                    const chapterData = bookData.chapters.find(c => c.chapter === seg.chapter);
+                    if (!chapterData) continue;
+
+                    if (seg.versePart) {
+                        const verseNums = parseVerses(seg.versePart);
+                        if (verseNums) {
+                            if (seg.isRangeStart) {
+                                // Get from first verse number to end of chapter
+                                const startV = Math.min(...verseNums);
+                                allVerses.push(...chapterData.verses.filter(v => v.verse >= startV));
+                            } else if (seg.isRangeEnd) {
+                                // Get from start of chapter to last verse number
+                                const endV = Math.max(...verseNums);
+                                allVerses.push(...chapterData.verses.filter(v => v.verse <= endV));
+                            } else {
+                                allVerses.push(...chapterData.verses.filter(v => verseNums.includes(v.verse)));
+                            }
+                        } else {
+                            allVerses.push(...chapterData.verses);
+                        }
+                    } else {
+                        allVerses.push(...chapterData.verses);
+                    }
+                }
+                return allVerses.length > 0 ? allVerses : null;
+            }
+
+            function getLiturgicalDate(dateStr) {
+                if (typeof LECTIONARY_2026 === 'undefined') return null;
+                return LECTIONARY_2026.filter(e => e.date === dateStr);
+            }
+
+            function getDatesWithReadings(year, month) {
+                if (typeof LECTIONARY_2026 === 'undefined') return new Set();
+                const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+                const dates = new Set();
+                LECTIONARY_2026.forEach(e => {
+                    if (e.date && e.date.startsWith(prefix) && e.readings) {
+                        dates.add(parseInt(e.date.substring(8, 10)));
+                    }
+                });
+                return dates;
+            }
+
+            function renderCalendar() {
+                const daysWithReadings = getDatesWithReadings(calYear, calMonth);
+                const today = new Date();
+                const firstDay = new Date(calYear, calMonth, 1).getDay();
+                const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+                let html = `<div class="calendar-nav">
+                    <button id="cal-prev">‹</button>
+                    <span>${monthNames[calMonth]} ${calYear}</span>
+                    <button id="cal-next">›</button>
+                </div>`;
+                html += '<div class="calendar-grid">';
+                ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(d => {
+                    html += `<div class="day-label">${d}</div>`;
+                });
+                for (let i = 0; i < firstDay; i++) html += '<div class="day-cell empty"></div>';
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+                    const hasReading = daysWithReadings.has(d);
+                    const classes = ['day-cell', isToday ? 'today' : '', hasReading ? 'has-reading' : ''].filter(Boolean).join(' ');
+                    html += `<div class="${classes}" data-day="${d}">${d}</div>`;
+                }
+                html += '</div>';
+                dailyCalendar.innerHTML = html;
+                dailyCalendar.classList.remove('hidden');
+                dailyReadingsView.classList.add('hidden');
+
+                $('#cal-prev').addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
+                $('#cal-next').addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
+                dailyCalendar.querySelectorAll('.day-cell:not(.empty)').forEach(cell => {
+                    cell.addEventListener('click', () => {
+                        const day = parseInt(cell.dataset.day);
+                        const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        showDailyReadings(dateStr);
+                    });
+                });
+            }
+
+            function showDailyCalendar() {
+                dailyCalendar.classList.remove('hidden');
+                dailyReadingsView.classList.add('hidden');
+            }
+
+            const READING_LABELS = {
+                'first_reading': 'First Reading',
+                'responsorial_psalm': 'Responsorial Psalm',
+                'second_reading': 'Second Reading',
+                'alleluia': 'Alleluia',
+                'gospel': 'Gospel'
+            };
+
+            function showDailyReadings(dateStr) {
+                const entries = getLiturgicalDate(dateStr);
+                if (!entries || entries.length === 0) {
+                    showToast('No readings available for this date.');
+                    return;
+                }
+                const entry = entries[0];
+                if (!entry.readings) {
+                    showToast('No readings available for this date.');
+                    return;
+                }
+
+                const d = new Date(dateStr + 'T00:00:00');
+                const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dailyDateHeader.textContent = d.toLocaleDateString('en-US', opts);
+                dailyEventName.textContent = entry.name || '';
+
+                let html = `<button class="daily-back-to-cal" id="back-to-cal">← Calendar</button>`;
+                const mainKeys = ['first_reading', 'responsorial_psalm', 'second_reading', 'alleluia', 'gospel'];
+                for (const key of mainKeys) {
+                    const ref = entry.readings[key];
+                    if (!ref || !ref.trim()) continue;
+                    const label = READING_LABELS[key] || key;
+                    html += `<div class="reading-section accordion">`;
+                    html += `<div class="accordion-header"><span class="reading-label">${label}</span><span class="reading-ref">${ref}</span><span class="accordion-icon">›</span></div>`;
+                    html += `<div class="accordion-body">`;
+                    const verses = lookupPassage(ref);
+                    if (verses && verses.length > 0) {
+                        html += '<div class="reading-text">';
+                        verses.forEach(v => {
+                            html += `<span class="verse-num">${v.verse}</span>${v.text} `;
+                        });
+                        html += '</div>';
+                    } else {
+                        html += `<div class="reading-text" style="color:var(--text-muted);font-style:italic;">Passage not available in current Bible data.</div>`;
+                    }
+                    html += '</div></div>';
+                }
+
+                // Reflection section
+                html += `<div class="reading-section accordion">`;
+                html += `<div class="accordion-header"><span class="reading-label">Do Your Reflection</span><span class="accordion-icon">›</span></div>`;
+                html += `<div class="accordion-body"><div class="reading-text reflection-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div></div>`;
+                html += `</div>`;
+
+                dailyPassages.innerHTML = html;
+                dailyCalendar.classList.add('hidden');
+                dailyReadingsView.classList.remove('hidden');
+                document.getElementById('daily-content').scrollTop = 0;
+
+                // Accordion toggle
+                dailyPassages.querySelectorAll('.accordion-header').forEach(header => {
+                    header.addEventListener('click', () => {
+                        const accordion = header.parentElement;
+                        accordion.classList.toggle('open');
+                    });
+                });
+
+                $('#back-to-cal').addEventListener('click', () => showDailyCalendar());
+            }
+
             // ============ DOWNLOAD LOGIC ============
 
             async function downloadBibleData() {
@@ -1295,8 +1797,8 @@
                 showScreen(bibleScreen);
             });
 
-            $('#card-daily').addEventListener('click', () => showScreen(dailyScreen));
-            $('#daily-back-btn').addEventListener('click', () => { showScreen(homeScreen); checkWifiBanner(); });
+            $('#card-daily').addEventListener('click', () => { renderCalendar(); showScreen(dailyScreen); });
+            $('#daily-back-btn').addEventListener('click', () => { showDailyCalendar(); showScreen(homeScreen); checkWifiBanner(); });
             $('#bible-back-btn').addEventListener('click', () => { showScreen(homeScreen); checkWifiBanner(); savePrefs(); });
             bookSelector.addEventListener('change', (e) => selectBook(e.target.value));
             chSelector.addEventListener('change', (e) => {

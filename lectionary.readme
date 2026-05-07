@@ -1,0 +1,123 @@
+# Lectionary Data Scraping Guide
+
+## Source
+https://www.catholicgallery.org/mass-reading/daily-mass-readings-2026/
+
+Individual day URL pattern: `https://www.catholicgallery.org/mass-reading/DDMMYY/`
+Example: January 1, 2026 → `https://www.catholicgallery.org/mass-reading/010126/`
+
+## How to Scrape
+
+Run this Python script (no dependencies needed, uses stdlib only):
+
+```python
+import urllib.request
+import json
+import re
+import time
+from datetime import date, timedelta
+
+def fetch_day(d):
+    url = f"https://www.catholicgallery.org/mass-reading/{d.strftime('%d%m')}{d.strftime('%y')}/"
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            html = resp.read().decode('utf-8')
+    except Exception as e:
+        return None
+
+    readings = {}
+    html_patterns = {
+        'first_reading': r'<strong>First Reading:?</strong>\s*(.+?)(?:<br|<\/p|\n)',
+        'responsorial_psalm': r'<strong>Responsorial Psalm:?</strong>\s*(.+?)(?:<br|<\/p|\n)',
+        'second_reading': r'<strong>Second Reading:?</strong>\s*(.+?)(?:<br|<\/p|\n)',
+        'alleluia': r'<strong>Alleluia:?</strong>\s*(.+?)(?:<br|<\/p|\n)',
+        'gospel': r'<strong>Gospel:?</strong>\s*(.+?)(?:<br|<\/p|\n)',
+    }
+
+    for key, pat in html_patterns.items():
+        m = re.search(pat, html, re.IGNORECASE)
+        if m:
+            ref = re.sub(r'<[^>]+>', '', m.group(1)).strip()
+            if ref:
+                readings[key] = ref
+
+    name_match = re.search(r'<h2[^>]*>([^<]+)</h2>', html)
+    name = name_match.group(1).strip() if name_match else ''
+
+    if not readings:
+        return None
+
+    return {
+        'date': d.isoformat(),
+        'name': name,
+        'readings': readings
+    }
+
+# Change year here for future years
+YEAR = 2026
+
+start = date(YEAR, 1, 1)
+end = date(YEAR, 12, 31)
+all_readings = []
+current = start
+total = (end - start).days + 1
+count = 0
+
+while current <= end:
+    count += 1
+    result = fetch_day(current)
+    if result:
+        all_readings.append(result)
+    if count % 30 == 0:
+        print(f"  {count}/{total} done - {len(all_readings)} readings so far")
+    current += timedelta(days=1)
+    time.sleep(0.2)
+
+print(f"\nDone! {len(all_readings)} days with readings out of {total}")
+
+# Save as JS variable for the app
+with open(f'{YEAR}.js', 'w') as f:
+    f.write(f'const LECTIONARY_{YEAR} = ')
+    json.dump(all_readings, f)
+    f.write(';')
+
+print(f"Saved to {YEAR}.js")
+```
+
+## To run
+
+```bash
+python3 scrape_lectionary.py
+```
+
+Takes ~2 minutes (365 requests with 0.2s delay between each).
+
+## Output Format
+
+```json
+{
+  "date": "2026-01-01",
+  "name": "Mary, Mother of God Solemnity (Octave of Christmas). Holy day of Obligation.",
+  "readings": {
+    "first_reading": "Numbers 6: 22-27",
+    "responsorial_psalm": "Psalms 67: 2-3, 5, 6, 8",
+    "second_reading": "Galatians 4: 4-7",
+    "alleluia": "Hebrews 1: 1-2",
+    "gospel": "Luke 2: 16-21"
+  }
+}
+```
+
+## After Scraping
+
+1. Update `index.html` to reference the new variable name (e.g. `LECTIONARY_2027`)
+2. Update `sw.js` to cache the new file (e.g. `./2027.js`)
+3. Update the `<script src="2026.js">` tag in `index.html`
+
+## Notes
+
+- The website uses Douay-Rheims verse references (e.g. "Psalms 67" = NAB "Psalm 67")
+- Not all days have a second reading (weekdays typically don't)
+- The app's reference parser handles the "Book Chapter: Verse" format from this source
+- Bible passages are looked up from nabre.js using the verse references

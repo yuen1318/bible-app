@@ -1,8 +1,9 @@
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v1.2.0';
 const APP_SHELL = [
     './',
     './index.html',
-    './nabre.js'
+    './nabre.js',
+    './2026.js'
 ];
 
 self.addEventListener('install', (event) => {
