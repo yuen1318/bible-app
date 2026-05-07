@@ -415,6 +415,31 @@
             padding: 0.3rem 0.4rem;
             border-radius: var(--radius-sm);
             transition: background var(--transition);
+            cursor: pointer;
+        }
+        .bible-content .verse.selected {
+            background: var(--accent-subtle);
+        }
+        .copy-toast {
+            position: fixed;
+            bottom: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            font-family: var(--font-sans);
+            box-shadow: var(--shadow-elevated);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .copy-toast.visible {
+            opacity: 1;
         }
         .bible-content .verse .verse-num {
             font-size: 0.7rem;
@@ -665,6 +690,37 @@
             font-family: var(--font-serif) !important;
             font-style: italic;
             color: var(--text-secondary) !important;
+        }
+        .best-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .best-item {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            font-style: normal;
+        }
+        .best-letter {
+            font-family: var(--font-sans);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 1.2rem;
+        }
+        .best-word {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 4.5rem;
+        }
+        .best-q {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: normal;
         }
         .daily-back-to-cal {
             background: var(--bg-card);
@@ -929,6 +985,7 @@
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
+    <div class="copy-toast" id="copy-toast">Copied!</div>
 
     <script src="nabre.js"></script>
     <script src="2026.js"></script>
@@ -1302,6 +1359,32 @@
                 }
             }
 
+            // ============ VERSE COPY ============
+            const copyToast = $('#copy-toast');
+            let copyTimeout = null;
+
+            function showCopyToast() {
+                copyToast.classList.add('visible');
+                if (copyTimeout) clearTimeout(copyTimeout);
+                copyTimeout = setTimeout(() => copyToast.classList.remove('visible'), 1500);
+            }
+
+            function copyVerseText(verseEl) {
+                const text = verseEl.textContent.replace(/^\d+\s*/, '').trim();
+                const book = getCurrentBook();
+                const verseNum = verseEl.id ? verseEl.id.replace('v', '') : '';
+                const ref = book ? `${book.name} ${APP_STATE.currentChapter}:${verseNum}` : '';
+                const copyText = ref ? `"${text}" — ${ref}` : text;
+                navigator.clipboard.writeText(copyText).then(() => showCopyToast());
+                verseEl.classList.add('selected');
+                setTimeout(() => verseEl.classList.remove('selected'), 1500);
+            }
+
+            versesContainer.addEventListener('click', (e) => {
+                const verseEl = e.target.closest('.verse');
+                if (verseEl) copyVerseText(verseEl);
+            });
+
             function navigateChapter(delta) {
                 APP_STATE.currentChapter += delta;
                 clampChapter();
@@ -1642,8 +1725,17 @@
 
                 // Reflection section
                 html += `<div class="reading-section accordion">`;
-                html += `<div class="accordion-header"><span class="reading-label">Do Your Reflection</span><span class="accordion-icon">›</span></div>`;
-                html += `<div class="accordion-body"><div class="reading-text reflection-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div></div>`;
+                html += `<div class="accordion-header"><span class="reading-label">BEST Reflection</span><span class="accordion-icon">›</span></div>`;
+                html += `<div class="accordion-body"><div class="reading-text reflection-text">
+                    <p style="margin-bottom:0.75rem;color:var(--text-secondary);font-family:var(--font-sans);font-size:0.85rem;font-style:normal;">Use today's readings to reflect with these 4 questions:</p>
+                    <div class="best-grid">
+                        <div class="best-item"><span class="best-letter">B</span><span class="best-word">Blessing</span><span class="best-q">What blessing, promise, or encouragement does God give me?</span></div>
+                        <div class="best-item"><span class="best-letter">E</span><span class="best-word">Example</span><span class="best-q">Is there an example I should follow — a person, attitude, or action?</span></div>
+                        <div class="best-item"><span class="best-letter">S</span><span class="best-word">Sin</span><span class="best-q">Is there a sin to confess or turn away from?</span></div>
+                        <div class="best-item"><span class="best-letter">T</span><span class="best-word">Truth</span><span class="best-q">What truth about God does this teach me to believe?</span></div>
+                    </div>
+                    <p style="margin-top:0.75rem;color:var(--text-muted);font-family:var(--font-sans);font-size:0.8rem;font-style:normal;">Write your answers in a journal. End with a short prayer turning your insights into a conversation with God.</p>
+                </div></div>`;
                 html += `</div>`;
 
                 dailyPassages.innerHTML = html;
@@ -1811,9 +1903,8 @@
             $('#dismiss-banner').addEventListener('click', (e) => {
                 e.stopPropagation();
                 wifiBanner.classList.add('hidden');
-                showToast('May your time be peaceful and undisturbed.');
             });
-            wifiBanner.addEventListener('click', () => showToast('Consider turning off WiFi for uninterrupted prayer time.'));
+            wifiBanner.addEventListener('click', () => wifiBanner.classList.add('hidden'));
 
             // Theme toggle
             const themeToggle = $('#theme-toggle');
@@ -1837,7 +1928,7 @@
             applyTheme(savedTheme);
 
             window.addEventListener('online', () => { APP_STATE.isOnline = true; checkWifiBanner(); showOfflineLock(); });
-            window.addEventListener('offline', () => { APP_STATE.isOnline = false; checkWifiBanner(); updateLockStatus(); showToast('You are offline — perfect for undisturbed scripture time.'); });
+            window.addEventListener('offline', () => { APP_STATE.isOnline = false; checkWifiBanner(); updateLockStatus(); });
 
             // ============ OFFLINE LOCK SCREEN ============
             const offlineLock = $('#offline-lock');
