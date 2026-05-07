@@ -1,0 +1,3 @@
+https://github.com/Liturgical-Calendar/LiturgicalCalendarAPI
+https://litcal.johnromanodorazio.com/dist/#/Main%20API%20endpoint/retrieveGeneralRomanCalendarForYearGET
+https://litcal.johnromanodorazio.com/api/v5/calendar/2026?year_type=LITURGICAL

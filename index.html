@@ -331,6 +331,7 @@
         .bible-topbar {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             padding: 0.75rem 1rem;
             background: var(--bg-elevated);
@@ -381,33 +382,23 @@
         .chapter-nav {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
         }
-        .chapter-nav .ch-btn {
+        .chapter-nav .ch-selector {
             background: var(--bg-card);
             border: 1px solid var(--border);
             color: var(--text-primary);
-            width: 36px;
-            height: 36px;
+            padding: 0.4rem 0.6rem;
             border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition);
-            font-family: var(--font-sans);
-        }
-        .chapter-nav .ch-btn:active {
-            background: var(--bg-card-hover);
-            border-color: var(--accent);
-        }
-        .chapter-nav .ch-label {
             font-size: 0.85rem;
-            color: var(--text-secondary);
-            min-width: 50px;
-            text-align: center;
+            font-family: var(--font-sans);
             font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            padding-right: 1.5rem;
         }
         .bible-content {
             flex: 1;
@@ -733,9 +724,7 @@
             <button class="back-btn" id="bible-back-btn" aria-label="Back to home">←</button>
             <select class="book-selector" id="book-selector" aria-label="Select book"></select>
             <div class="chapter-nav">
-                <button class="ch-btn" id="ch-prev" aria-label="Previous chapter">‹</button>
-                <span class="ch-label" id="ch-label">1</span>
-                <button class="ch-btn" id="ch-next" aria-label="Next chapter">›</button>
+                <select class="ch-selector" id="ch-selector" aria-label="Select chapter"></select>
             </div>
         </div>
         <div class="bible-content allow-select" id="bible-content">
@@ -791,7 +780,7 @@
             const wifiBanner = $('#wifi-banner');
             const toast = $('#toast');
             const bookSelector = $('#book-selector');
-            const chLabel = $('#ch-label');
+            const chSelector = $('#ch-selector');
             const chapterHeading = $('#chapter-heading');
             const versesContainer = $('#verses-container');
             const bibleContent = $('#bible-content');
@@ -1109,7 +1098,7 @@
                 }
                 const chapterData = book.chapters[APP_STATE.currentChapter - 1] || [];
                 chapterHeading.textContent = `${book.name} ${APP_STATE.currentChapter}`;
-                chLabel.textContent = `Ch ${APP_STATE.currentChapter}`;
+                renderChapterSelector();
 
                 let html = '';
                 // chapterData is now guaranteed to be an array of strings
@@ -1130,6 +1119,18 @@
                 const verses = versesContainer.querySelectorAll('.verse');
                 verses.forEach(v => { v.style.fontSize = APP_STATE.fontSize + 'px'; });
                 chapterHeading.style.fontSize = (APP_STATE.fontSize + 2) + 'px';
+            }
+
+            function renderChapterSelector() {
+                const max = getMaxChapter();
+                chSelector.innerHTML = '';
+                for (let i = 1; i <= max; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = `Ch ${i}`;
+                    if (i === APP_STATE.currentChapter) opt.selected = true;
+                    chSelector.appendChild(opt);
+                }
             }
 
             function navigateChapter(delta) {
@@ -1298,8 +1299,11 @@
             $('#daily-back-btn').addEventListener('click', () => { showScreen(homeScreen); checkWifiBanner(); });
             $('#bible-back-btn').addEventListener('click', () => { showScreen(homeScreen); checkWifiBanner(); savePrefs(); });
             bookSelector.addEventListener('change', (e) => selectBook(e.target.value));
-            $('#ch-prev').addEventListener('click', () => navigateChapter(-1));
-            $('#ch-next').addEventListener('click', () => navigateChapter(1));
+            chSelector.addEventListener('change', (e) => {
+                APP_STATE.currentChapter = parseInt(e.target.value);
+                renderChapter();
+                savePrefs();
+            });
             $('#font-smaller').addEventListener('click', () => changeFontSize(-1));
             $('#font-larger').addEventListener('click', () => changeFontSize(1));
             $('#dismiss-banner').addEventListener('click', (e) => {
@@ -1369,7 +1373,6 @@
             lockConfirmBtn.addEventListener('click', () => {
                 if (!navigator.onLine) {
                     hideOfflineLock();
-                    showToast('God bless your reading time. 🕊️');
                 }
             });
 
@@ -1454,12 +1457,8 @@
                     APP_STATE.bibleData = NABRE_DATA;
                     APP_STATE.books = parseBibleData(NABRE_DATA);
                     APP_STATE.isDownloaded = true;
-                    progressBar.style.width = '100%';
-                    progressText.textContent = 'Ready ✓';
-                    downloadStatus.textContent = 'Your sanctuary is ready.';
                     clearInterval(verseRotator);
-                    versePreview.textContent = '';
-                    setTimeout(() => initializeApp(), 500);
+                    initializeApp();
                 } else {
                     // Fallback: try cached data
                     const cached = await getCachedBibleData();
@@ -1467,12 +1466,8 @@
                         APP_STATE.bibleData = cached;
                         APP_STATE.books = parseBibleData(cached);
                         APP_STATE.isDownloaded = true;
-                        progressBar.style.width = '100%';
-                        progressText.textContent = 'Ready ✓';
-                        downloadStatus.textContent = 'Your sanctuary is ready.';
                         clearInterval(verseRotator);
-                        versePreview.textContent = '';
-                        setTimeout(() => initializeApp(), 500);
+                        initializeApp();
                     } else {
                         downloadStatus.textContent = 'Could not load scripture. Ensure nabre.js is available.';
                         progressText.textContent = 'Failed ✗';
