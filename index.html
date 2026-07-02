@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#09090b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -37,6 +37,37 @@
             --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             --font-serif: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
+            /* Spacing scale */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-7: 1.75rem;
+            --space-8: 2rem;
+            --space-9: 2.25rem;
+            --space-10: 2.5rem;
+            /* Liturgical season colors */
+            --season-advent: #6b3fa0;
+            --season-christmas: #c9a84c;
+            --season-lent: #9b2d4a;
+            --season-easter: #c9a84c;
+            --season-ordinary: #4a7c59;
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            :root {
+                --transition: 0ms;
+            }
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
 
         [data-theme="light"] {
@@ -49,13 +80,13 @@
             --text-primary: #1a1a1a;
             --text-secondary: #525252;
             --text-muted: #737373;
-            --accent: #92700c;
-            --accent-glow: #b8860b;
-            --accent-subtle: rgba(146, 112, 12, 0.1);
+            --accent: #8b6914;
+            --accent-glow: #a07d1e;
+            --accent-subtle: rgba(139, 105, 20, 0.12);
             --danger: #fecaca;
             --danger-text: #991b1b;
-            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
-            --shadow-elevated: 0 2px 6px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-elevated: 0 2px 6px rgba(0, 0, 0, 0.12), 0 8px 28px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -63,8 +94,6 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         html,
@@ -161,6 +190,26 @@
                 opacity: 0;
             }
         }
+
+        /* Focus-visible styles for keyboard accessibility */
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        button:focus-visible,
+        select:focus-visible,
+        [role="button"]:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        .day-cell:focus-visible {
+            outline: 2px solid var(--accent-glow);
+            outline-offset: -2px;
+        }
+        .accordion-header:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
         #download-screen h2 {
             font-size: 1.35rem;
             font-weight: 500;
@@ -250,10 +299,14 @@
             position: relative;
             overflow: hidden;
         }
+        #home-screen .quick-card:hover {
+            border-color: var(--accent-subtle);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(201, 168, 76, 0.15);
+        }
         #home-screen .quick-card:active {
             transform: scale(0.97);
             background: var(--bg-card-hover);
-            border-color: var(--border-light);
+            border-color: var(--accent);
         }
         #home-screen .quick-card .card-icon {
             color: var(--accent);
@@ -359,7 +412,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 0.55rem 0.75rem;
+            padding: 0.55rem 1.5rem 0.55rem 0.75rem;
             color: var(--text-primary);
             font-size: 0.9rem;
             font-weight: 500;
@@ -368,6 +421,9 @@
             font-family: var(--font-sans);
             appearance: none;
             -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
             transition: all var(--transition);
             max-width: 200px;
             text-overflow: ellipsis;
@@ -405,10 +461,12 @@
             overflow-y: auto;
             padding: 1.25rem 1rem 2rem;
             -webkit-overflow-scrolling: touch;
+            max-width: 40rem;
+            width: 100%;
+            margin: 0 auto;
         }
         .bible-content .verse {
             font-family: var(--font-sans);
-            font-size: 1.15rem;
             line-height: 1.85;
             color: var(--text-primary);
             margin-bottom: 0.6rem;
@@ -483,8 +541,8 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             color: var(--text-secondary);
-            width: 38px;
-            height: 38px;
+            width: 44px;
+            height: 44px;
             border-radius: 99px;
             cursor: pointer;
             font-size: 1rem;
@@ -539,6 +597,9 @@
             flex: 1;
             overflow-y: auto;
             padding: 1rem;
+            max-width: 40rem;
+            width: 100%;
+            margin: 0 auto;
         }
         .hidden { display: none !important; }
 
@@ -554,8 +615,8 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             color: var(--text-primary);
-            width: 32px;
-            height: 32px;
+            width: 44px;
+            height: 44px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 1rem;
@@ -592,6 +653,8 @@
             cursor: pointer;
             color: var(--text-secondary);
             transition: all var(--transition);
+            min-width: 44px;
+            min-height: 44px;
         }
         .calendar-grid .day-cell:hover {
             background: var(--bg-card-hover);
@@ -670,7 +733,7 @@
             transition: max-height 0.35s ease;
         }
         .accordion.open .accordion-body {
-            max-height: 2000px;
+            max-height: 10000px;
         }
         .reading-section .reading-text {
             font-family: var(--font-serif);
@@ -767,6 +830,7 @@
         }
         .toast.show {
             transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
         }
 
         /* Theme toggle */
@@ -777,8 +841,8 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             color: var(--text-secondary);
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 99px;
             cursor: pointer;
             font-size: 1.2rem;
@@ -788,6 +852,10 @@
             transition: all var(--transition);
             box-shadow: var(--shadow-card);
             z-index: 20;
+        }
+        .theme-toggle:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-subtle);
         }
         .theme-toggle:active {
             transform: scale(0.92);
@@ -883,6 +951,21 @@
                 font-size: 1.1rem;
             }
         }
+
+        /* Touch devices: use native OS select styling for better mobile UX */
+        @media (pointer: coarse) {
+            .bible-topbar .book-selector,
+            .chapter-nav .ch-selector {
+                appearance: auto;
+                -webkit-appearance: auto;
+                background-image: none;
+                min-height: 44px;
+            }
+            .bible-topbar .book-selector {
+                max-width: none;
+                padding-right: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -907,7 +990,7 @@
     <!-- ==================== HOME SCREEN ==================== -->
     <div class="screen" id="home-screen">
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
             <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         </button>
         <div class="app-header">
@@ -1060,6 +1143,7 @@
                 fontSizeIdx: 1,
                 isDownloaded: false,
                 isOnline: navigator.onLine,
+                selectedDate: null,
             };
 
             // ============ VERSE FRAGMENTS FOR LOADING SCREEN ============
@@ -1147,7 +1231,7 @@
                 // Only use Cache API if not on file://
                 if (!IS_FILE_PROTOCOL) {
                     try {
-                        const cache = await caches.open('sacred-scripture-v2');
+                        const cache = await caches.open('v1.3.0');
                         const response = new Response(JSON.stringify(jsonData), {
                             headers: { 'Content-Type': 'application/json' }
                         });
@@ -1162,7 +1246,7 @@
                 // Try Cache API first if not file://
                 if (!IS_FILE_PROTOCOL) {
                     try {
-                        const cache = await caches.open('sacred-scripture-v2');
+                        const cache = await caches.open('v1.3.0');
                         const response = await cache.match('/bible-data');
                         if (response) return await response.json();
                     } catch (e) { /* fall through */ }
@@ -1172,20 +1256,24 @@
             }
 
             async function savePrefs() {
-                const db = await openIDB();
-                const prefs = {
-                    id: 'user-prefs',
-                    bookIndex: APP_STATE.currentBookIndex,
-                    chapter: APP_STATE.currentChapter,
-                    fontSizeIdx: APP_STATE.fontSizeIdx,
-                };
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction('prefs', 'readwrite');
-                    const store = tx.objectStore('prefs');
-                    store.put(prefs);
-                    tx.oncomplete = resolve;
-                    tx.onerror = reject;
-                });
+                try {
+                    const db = await openIDB();
+                    const prefs = {
+                        id: 'user-prefs',
+                        bookIndex: APP_STATE.currentBookIndex,
+                        chapter: APP_STATE.currentChapter,
+                        fontSizeIdx: APP_STATE.fontSizeIdx,
+                    };
+                    return new Promise((resolve) => {
+                        const tx = db.transaction('prefs', 'readwrite');
+                        const store = tx.objectStore('prefs');
+                        store.put(prefs);
+                        tx.oncomplete = resolve;
+                        tx.onerror = () => resolve(); // silent fail — prefs are non-critical
+                    });
+                } catch {
+                    // IndexedDB unavailable (file://, private browsing) — silently ignore
+                }
             }
 
             async function loadPrefs() {
@@ -1197,6 +1285,7 @@
                         const request = store.get('user-prefs');
                         request.onsuccess = () => resolve(request.result || null);
                         request.onerror = () => resolve(null);
+                        tx.onerror = () => resolve(null);
                     });
                 } catch {
                     return null;
@@ -1370,14 +1459,39 @@
             }
 
             function copyVerseText(verseEl) {
-                const text = verseEl.textContent.replace(/^\d+\s*/, '').trim();
+                const text = verseEl.querySelector('.verse-num')
+                    ? verseEl.textContent.slice(verseEl.querySelector('.verse-num').textContent.length).trim()
+                    : verseEl.textContent.replace(/^\d+\s*/, '').trim();
                 const book = getCurrentBook();
                 const verseNum = verseEl.id ? verseEl.id.replace('v', '') : '';
                 const ref = book ? `${book.name} ${APP_STATE.currentChapter}:${verseNum}` : '';
                 const copyText = ref ? `"${text}" — ${ref}` : text;
-                navigator.clipboard.writeText(copyText).then(() => showCopyToast());
-                verseEl.classList.add('selected');
-                setTimeout(() => verseEl.classList.remove('selected'), 1500);
+
+                const onSuccess = () => {
+                    showCopyToast();
+                    verseEl.classList.add('selected');
+                    setTimeout(() => verseEl.classList.remove('selected'), 1500);
+                };
+
+                const fallbackCopy = () => {
+                    const ta = document.createElement('textarea');
+                    ta.value = copyText;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    let copied = false;
+                    try { copied = document.execCommand('copy'); } catch { /* silent */ }
+                    document.body.removeChild(ta);
+                    if (copied) onSuccess();
+                };
+
+                try {
+                    navigator.clipboard.writeText(copyText).then(onSuccess).catch(fallbackCopy);
+                } catch {
+                    // clipboard API unavailable entirely (file://, older browser)
+                    fallbackCopy();
+                }
             }
 
             versesContainer.addEventListener('click', (e) => {
@@ -1418,8 +1532,9 @@
             const dailyDateHeader = $('#daily-date-header');
             const dailyEventName = $('#daily-event-name');
             const dailyPassages = $('#daily-passages');
-            let calYear = new Date().getFullYear();
-            let calMonth = new Date().getMonth();
+            let now = new Date();
+            let calYear = now.getFullYear();
+            let calMonth = now.getMonth();
 
             const BOOK_ALIASES = {
                 'gn': 'Genesis', 'gen': 'Genesis', 'genesis': 'Genesis',
@@ -1496,6 +1611,7 @@
                 'jude': 'Jude',
                 'rv': 'Revelation', 'rev': 'Revelation', 'revelation': 'Revelation',
                 'marc': 'Mark', 'mattthew': 'Matthew', 'proverbe': 'Proverbs', 'maccabees': '2 Maccabees',
+                'first maccabees': '1 Maccabees', 'second maccabees': '2 Maccabees',
                 'first samuel': '1 Samuel', 'second samuel': '2 Samuel',
                 'first kings': '1 Kings', 'second kings': '2 Kings',
                 'first chronicles': '1 Chronicles', 'second chronicles': '2 Chronicles',
@@ -1509,7 +1625,9 @@
             function resolveBookName(raw) {
                 const lower = raw.trim().toLowerCase();
                 if (BOOK_ALIASES[lower]) return BOOK_ALIASES[lower];
-                const found = NABRE_DATA.find(b => b.book.toLowerCase() === lower);
+                const sourceData = APP_STATE.bibleData || (typeof NABRE_DATA !== 'undefined' ? NABRE_DATA : null);
+                if (!sourceData || !Array.isArray(sourceData)) return null;
+                const found = sourceData.find(b => b.book.toLowerCase() === lower);
                 return found ? found.book : null;
             }
 
@@ -1518,63 +1636,85 @@
                 let cleaned = ref.trim();
                 cleaned = cleaned.replace(/^Cf\.\s*/i, '');
                 if (cleaned.includes('|')) cleaned = cleaned.split('|')[0].trim();
-                // Convert cross-chapter ranges "Book Ch:V – Ch:V" to semicolons
-                cleaned = cleaned.replace(/\s*–\s*/g, ';');
+                // Strip alternate readings (take the primary only)
+                cleaned = cleaned.replace(/\s+or\s+.*/i, '');
+                // Normalize HTML entity to Unicode en-dash for cross-chapter detection
+                cleaned = cleaned.replace(/&#8211;/g, '–');
                 return cleaned;
             }
 
             function parseReference(ref) {
                 if (!ref || !ref.trim()) return [];
                 const cleaned = cleanRef(ref);
-                // Split on semicolons
+                // Split on semicolons (raw separators, NOT from en-dash conversion)
                 const segments = cleaned.split(/;/).map(s => s.trim()).filter(Boolean);
                 const results = [];
                 let lastBook = null;
                 let lastChapter = null;
-                let isCrossChapterRange = cleaned.includes(';') && !cleaned.includes(',') && segments.length === 2;
+
+                function addResult(book, chapter, versePart, isRangeStart, isRangeEnd) {
+                    lastBook = book;
+                    lastChapter = chapter;
+                    results.push({ book, chapter, versePart, isRangeStart, isRangeEnd });
+                }
 
                 for (let i = 0; i < segments.length; i++) {
                     const seg = segments[i];
+
+                    // Check for cross-chapter en-dash within this single segment
+                    // Cross-chapter format: "Book C1:V1 \u2013 C2:V2" or "C1:V1 \u2013 C2:V2"
+                    const crossParts = seg.split(/\s*–\s*/);
+                    const isCrossChapter = crossParts.length === 2 &&
+                        crossParts[0].match(/\d+\s*:\s*\d/) &&
+                        crossParts[1].match(/\d+\s*:\s*\d/);
+
+                    if (isCrossChapter) {
+                        parseSegment(crossParts[0].trim(), true, false);
+                        parseSegment(crossParts[1].trim(), false, true);
+                        continue;
+                    }
+
+                    parseSegment(seg, false, false);
+                }
+                return results;
+
+                function parseSegment(seg, isRangeStart, isRangeEnd) {
                     // Try "Book Chapter: Verses" (with optional space after colon)
                     let match = seg.match(/^(.+?)\s+(\d+)\s*:\s*(.+)$/);
                     if (match) {
-                        lastBook = match[1];
-                        lastChapter = parseInt(match[2]);
-                        results.push({ book: match[1], chapter: lastChapter, versePart: match[3].trim(), isRangeStart: isCrossChapterRange && i === 0, isRangeEnd: isCrossChapterRange && i === 1 });
-                        continue;
+                        addResult(match[1], parseInt(match[2]), match[3].trim(), isRangeStart, isRangeEnd);
+                        return;
                     }
                     // Try "Chapter: Verses" (continuation of previous book)
                     match = seg.match(/^(\d+)\s*:\s*(.+)$/);
                     if (match && lastBook) {
-                        lastChapter = parseInt(match[1]);
-                        results.push({ book: lastBook, chapter: lastChapter, versePart: match[2].trim(), isRangeStart: false, isRangeEnd: isCrossChapterRange && i === 1 });
-                        continue;
+                        addResult(lastBook, parseInt(match[1]), match[2].trim(), false, isRangeEnd);
+                        return;
                     }
                     // Try just verse numbers (continuation of previous book+chapter) e.g. "5, 6-7"
                     if (lastBook && lastChapter && /^\d/.test(seg)) {
-                        // Append to previous segment's versePart
                         if (results.length > 0) {
                             results[results.length - 1].versePart += ', ' + seg;
                         }
-                        continue;
+                        return;
                     }
                     // Try "Book Chapter" (whole chapter, e.g. "Psalm 37") - optional (number) at end
                     match = seg.match(/^(.+?)\s+(\d+)(?:\s*\(\d+\))?$/);
                     if (match) {
-                        lastBook = match[1];
-                        lastChapter = parseInt(match[2]);
-                        results.push({ book: match[1], chapter: lastChapter, versePart: null, isRangeStart: false, isRangeEnd: false });
-                        continue;
+                        addResult(match[1], parseInt(match[2]), null, false, false);
+                        return;
                     }
                 }
-                return results;
             }
 
             function parseVerses(versePart) {
                 if (!versePart) return null;
                 const verses = [];
-                const segments = versePart.split(',').map(s => s.trim());
+                // Normalize " and " to comma so "5 and 6a and 9b" parses correctly
+                const normalized = versePart.replace(/\s+and\s+/gi, ',');
+                const segments = normalized.split(',').map(s => s.trim());
                 for (const seg of segments) {
+                    if (!seg) continue;
                     // Match patterns like "1", "3-4", "1bcde", "3cd-5", "5a", "8b-9"
                     // Also handles "1-2" within longer string by being flexible
                     const rangeMatch = seg.match(/^(\d+)[a-z]*(?:\s*[-–]\s*(\d+)[a-z]*)?/);
@@ -1594,30 +1734,35 @@
                 for (const seg of parsed) {
                     const bookName = resolveBookName(seg.book);
                     if (!bookName) continue;
-                    const bookData = NABRE_DATA.find(b => b.book === bookName);
+                    const sourceData = APP_STATE.bibleData || (typeof NABRE_DATA !== 'undefined' ? NABRE_DATA : null);
+                    if (!sourceData || !Array.isArray(sourceData)) continue;
+                    const bookData = sourceData.find(b => b.book === bookName);
                     if (!bookData) continue;
                     const chapterData = bookData.chapters.find(c => c.chapter === seg.chapter);
                     if (!chapterData) continue;
 
+                    const verses = chapterData.verses || [];
                     if (seg.versePart) {
                         const verseNums = parseVerses(seg.versePart);
                         if (verseNums) {
-                            if (seg.isRangeStart) {
-                                // Get from first verse number to end of chapter
-                                const startV = Math.min(...verseNums);
-                                allVerses.push(...chapterData.verses.filter(v => v.verse >= startV));
+                            if (seg.isRangeStart && verseNums.length === 1) {
+                                const startV = verseNums[0];
+                                allVerses.push(...verses.filter(v => v.verse >= startV));
+                            } else if (seg.isRangeStart) {
+                                allVerses.push(...verses.filter(v => verseNums.includes(v.verse)));
+                            } else if (seg.isRangeEnd && verseNums.length === 1) {
+                                const endV = verseNums[0];
+                                allVerses.push(...verses.filter(v => v.verse <= endV));
                             } else if (seg.isRangeEnd) {
-                                // Get from start of chapter to last verse number
-                                const endV = Math.max(...verseNums);
-                                allVerses.push(...chapterData.verses.filter(v => v.verse <= endV));
+                                allVerses.push(...verses.filter(v => verseNums.includes(v.verse)));
                             } else {
-                                allVerses.push(...chapterData.verses.filter(v => verseNums.includes(v.verse)));
+                                allVerses.push(...verses.filter(v => verseNums.includes(v.verse)));
                             }
                         } else {
-                            allVerses.push(...chapterData.verses);
+                            allVerses.push(...verses);
                         }
                     } else {
-                        allVerses.push(...chapterData.verses);
+                        allVerses.push(...verses);
                     }
                 }
                 return allVerses.length > 0 ? allVerses : null;
@@ -1661,7 +1806,7 @@
                     const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
                     const hasReading = daysWithReadings.has(d);
                     const classes = ['day-cell', isToday ? 'today' : '', hasReading ? 'has-reading' : ''].filter(Boolean).join(' ');
-                    html += `<div class="${classes}" data-day="${d}">${d}</div>`;
+                    html += `<div class="${classes}" data-day="${d}" tabindex="0" role="button" aria-label="Readings for ${monthNames[calMonth]} ${d}, ${calYear}" aria-pressed="${APP_STATE.selectedDate === `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`}">${d}</div>`;
                 }
                 html += '</div>';
                 dailyCalendar.innerHTML = html;
@@ -1671,11 +1816,13 @@
                 $('#cal-prev').addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
                 $('#cal-next').addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
                 dailyCalendar.querySelectorAll('.day-cell:not(.empty)').forEach(cell => {
-                    cell.addEventListener('click', () => {
+                    const activate = () => {
                         const day = parseInt(cell.dataset.day);
                         const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         showDailyReadings(dateStr);
-                    });
+                    };
+                    cell.addEventListener('click', activate);
+                    cell.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } });
                 });
             }
 
@@ -1693,6 +1840,7 @@
             };
 
             function showDailyReadings(dateStr) {
+                APP_STATE.selectedDate = dateStr;
                 const entries = getLiturgicalDate(dateStr);
                 if (!entries || entries.length === 0) {
                     showToast('No readings available for this date.');
@@ -1704,12 +1852,13 @@
                     return;
                 }
 
-                const d = new Date(dateStr + 'T00:00:00');
+                const [y, m, day] = dateStr.split('-').map(Number);
+                const d = new Date(y, m - 1, day);
                 const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 dailyDateHeader.textContent = d.toLocaleDateString('en-US', opts);
                 dailyEventName.textContent = entry.name || '';
 
-                let html = `<button class="daily-back-to-cal" id="back-to-cal">← Calendar</button>`;
+                let html = '';
                 const mainKeys = ['first_reading', 'responsorial_psalm', 'second_reading', 'alleluia', 'gospel'];
                 for (const key of mainKeys) {
                     const ref = entry.readings[key];
@@ -1759,93 +1908,6 @@
                     });
                 });
 
-                $('#back-to-cal').addEventListener('click', () => showDailyCalendar());
-            }
-
-            // ============ DOWNLOAD LOGIC ============
-
-            async function downloadBibleData() {
-                downloadStatus.textContent = 'Connecting to scripture repository…';
-                progressText.textContent = 'Establishing connection…';
-                progressBar.style.width = '5%';
-
-                try {
-                    const response = await fetch(BIBLE_URL);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                    const contentLength = response.headers.get('content-length');
-                    const total = contentLength ? parseInt(contentLength) : 0;
-                    const reader = response.body.getReader();
-                    const chunks = [];
-                    let received = 0;
-
-                    downloadStatus.textContent = 'Downloading sacred scripture…';
-                    progressText.textContent = total ? '0%' : 'Downloading…';
-                    progressBar.style.width = total ? '10%' : '15%';
-
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        chunks.push(value);
-                        received += value.length;
-                        if (total) {
-                            const pct = Math.round((received / total) * 100);
-                            progressBar.style.width = Math.min(pct, 98) + '%';
-                            progressText.textContent = `${pct}% (${(received / 1024 / 1024).toFixed(1)} MB)`;
-                            downloadStatus.textContent = 'Downloading sacred scripture…';
-                        } else {
-                            progressText.textContent = `Downloading… ${(received / 1024 / 1024).toFixed(1)} MB`;
-                            progressBar.style.width = '60%';
-                        }
-                    }
-
-                    progressBar.style.width = '98%';
-                    progressText.textContent = 'Processing…';
-                    downloadStatus.textContent = 'Processing scripture data…';
-
-                    const blob = new Blob(chunks);
-                    const text = await blob.text();
-                    const json = JSON.parse(text);
-
-                    progressBar.style.width = '99%';
-                    downloadStatus.textContent = 'Storing for offline access…';
-
-                    await cacheBibleData(json);
-
-                    APP_STATE.bibleData = json;
-                    APP_STATE.books = parseBibleData(json);
-                    APP_STATE.isDownloaded = true;
-
-                    progressBar.style.width = '100%';
-                    progressText.textContent = 'Complete ✓';
-                    downloadStatus.textContent = 'Your sanctuary is ready.';
-
-                    clearInterval(verseRotator);
-                    versePreview.textContent = '';
-
-                    setTimeout(() => initializeApp(), 800);
-                } catch (err) {
-                    console.error('Download failed:', err);
-                    downloadStatus.textContent = 'Unable to download. Trying cached data…';
-                    progressText.textContent = 'Checking offline storage…';
-
-                    const cached = await getCachedBibleData();
-                    if (cached) {
-                        APP_STATE.bibleData = cached;
-                        APP_STATE.books = parseBibleData(cached);
-                        APP_STATE.isDownloaded = true;
-                        downloadStatus.textContent = 'Loaded from offline storage.';
-                        progressBar.style.width = '100%';
-                        progressText.textContent = 'Ready (offline) ✓';
-                        clearInterval(verseRotator);
-                        setTimeout(() => initializeApp(), 600);
-                    } else {
-                        downloadStatus.textContent = 'Could not load scripture. Please check your connection and reload.';
-                        progressText.textContent = 'Failed ✗';
-                        progressBar.style.width = '100%';
-                        progressBar.style.background = '#7f1d1d';
-                    }
-                }
             }
 
             // ============ INITIALIZATION ============
@@ -1854,7 +1916,7 @@
                 if (prefs) {
                     APP_STATE.currentBookIndex = prefs.bookIndex || 0;
                     APP_STATE.currentChapter = prefs.chapter || 1;
-                    APP_STATE.fontSizeIdx = prefs.fontSizeIdx || 1;
+                    APP_STATE.fontSizeIdx = prefs.fontSizeIdx != null ? prefs.fontSizeIdx : 1;
                     APP_STATE.fontSize = APP_STATE.fontSizeSteps[APP_STATE.fontSizeIdx];
                     fontLabel.textContent = APP_STATE.fontSizeLabels[APP_STATE.fontSizeIdx];
                 }
@@ -1864,6 +1926,10 @@
                 }
 
                 if (!APP_STATE.books || APP_STATE.books.length === 0) {
+                    downloadStatus.textContent = 'Could not load scripture. Please reload.';
+                    progressText.textContent = 'Failed ✗';
+                    progressBar.style.width = '100%';
+                    progressBar.style.background = '#7f1d1d';
                     showToast('No scripture data available. Please reload.');
                     return;
                 }
@@ -1897,8 +1963,21 @@
                 showScreen(bibleScreen);
             });
 
-            $('#card-daily').addEventListener('click', () => { renderCalendar(); showScreen(dailyScreen); });
-            $('#daily-back-btn').addEventListener('click', () => { showDailyCalendar(); showScreen(homeScreen); checkWifiBanner(); });
+            $('#card-daily').addEventListener('click', () => {
+                if (!APP_STATE.isDownloaded) { showToast('Scripture is still being prepared…'); return; }
+                renderCalendar();
+                showScreen(dailyScreen);
+            });
+            $('#daily-back-btn').addEventListener('click', () => {
+                if (dailyReadingsView.classList.contains('hidden')) {
+                    // Calendar is showing — go home
+                    showScreen(homeScreen);
+                    checkWifiBanner();
+                } else {
+                    // Readings are showing — go back to calendar
+                    showDailyCalendar();
+                }
+            });
             $('#bible-back-btn').addEventListener('click', () => { showScreen(homeScreen); checkWifiBanner(); savePrefs(); });
             bookSelector.addEventListener('change', (e) => selectBook(e.target.value));
             chSelector.addEventListener('change', (e) => {
@@ -1928,12 +2007,25 @@
                 const current = document.documentElement.getAttribute('data-theme') || 'dark';
                 const next = current === 'dark' ? 'light' : 'dark';
                 applyTheme(next);
-                localStorage.setItem('scripture-theme', next);
+                try { localStorage.setItem('scripture-theme', next); } catch { /* storage inaccessible */ }
             }
             themeToggle.addEventListener('click', toggleTheme);
-            // Load saved theme
-            const savedTheme = localStorage.getItem('scripture-theme') || 'dark';
-            applyTheme(savedTheme);
+            // Load saved theme — check saved pref first, then OS preference, then default dark
+            let savedTheme = null;
+            try { savedTheme = localStorage.getItem('scripture-theme'); } catch { /* storage inaccessible */ }
+            const osPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const osPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+            const defaultTheme = savedTheme || (osPrefersLight ? 'light' : 'dark');
+            applyTheme(defaultTheme);
+
+            // Listen for OS theme changes when user has no explicit saved preference
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                let hasSaved = false;
+                try { hasSaved = !!localStorage.getItem('scripture-theme'); } catch { /* ignore */ }
+                if (!hasSaved) {
+                    applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                }
+            });
 
             window.addEventListener('online', () => { APP_STATE.isOnline = true; checkWifiBanner(); showOfflineLock(); });
             window.addEventListener('offline', () => { APP_STATE.isOnline = false; checkWifiBanner(); updateLockStatus(); });
@@ -1982,6 +2074,8 @@
             // Keyboard navigation
             document.addEventListener('keydown', (e) => {
                 if (bibleScreen.classList.contains('active')) {
+                    // Don't navigate when user is interacting with form controls
+                    if (e.target.closest && e.target.closest('select, input, textarea, button')) return;
                     if (e.key === 'ArrowLeft') navigateChapter(-1);
                     if (e.key === 'ArrowRight') navigateChapter(1);
                     if (e.key === 'Escape') { showScreen(homeScreen); checkWifiBanner(); savePrefs(); }
@@ -1994,8 +2088,8 @@
             bibleContent.addEventListener('touchend', (e) => {
                 const diff = e.changedTouches[0].clientX - touchStartX;
                 if (Math.abs(diff) > 80) {
-                    if (diff < -60) navigateChapter(1);
-                    else if (diff > 60) navigateChapter(-1);
+                    if (diff < 0) navigateChapter(1);
+                    else navigateChapter(-1);
                 }
             });
 
@@ -2004,13 +2098,14 @@
                 navigator.serviceWorker.register('./sw.js')
                     .then((reg) => {
                         // Check for updates on every page load
-                        reg.update();
+                        reg.update().catch(() => {});
                         // When a new SW is waiting, activate it
                         reg.addEventListener('updatefound', () => {
                             const newWorker = reg.installing;
+                            if (!newWorker) return;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    newWorker.postMessage('SKIP_WAITING');
+                                    try { newWorker.postMessage('SKIP_WAITING'); } catch { /* worker may have terminated */ }
                                 }
                             });
                         });
@@ -2027,7 +2122,7 @@
             function invalidateServiceWorkerCache() {
                 if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                     navigator.serviceWorker.controller.postMessage('CLEAR_CACHE');
-                    navigator.serviceWorker.getRegistration().then((reg) => reg && reg.update());
+                    navigator.serviceWorker.getRegistration().then((reg) => reg && reg.update()).catch(() => {});
                 }
             }
 
@@ -2040,7 +2135,8 @@
                     if (APP_STATE.isDownloaded && deferredPrompt) {
                         showToast('Tap here to install this app for offline use 📲');
                         toast.addEventListener('click', () => {
-                            deferredPrompt.prompt();
+                            if (!deferredPrompt) return;
+                            deferredPrompt.prompt().catch(() => {});
                             deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
                         }, { once: true });
                     }
@@ -2059,7 +2155,9 @@
                     APP_STATE.books = parseBibleData(NABRE_DATA);
                     APP_STATE.isDownloaded = true;
                     clearInterval(verseRotator);
-                    initializeApp();
+                    // Populate offline cache for future loads where nabre.js may be unavailable
+                    cacheBibleData(NABRE_DATA).catch(() => {});
+                    await initializeApp();
                 } else {
                     // Fallback: try cached data
                     const cached = await getCachedBibleData();
@@ -2068,10 +2166,11 @@
                         APP_STATE.books = parseBibleData(cached);
                         APP_STATE.isDownloaded = true;
                         clearInterval(verseRotator);
-                        initializeApp();
+                        await initializeApp();
                     } else {
+                        clearInterval(verseRotator);
                         downloadStatus.textContent = 'Could not load scripture. Ensure nabre.js is available.';
-                        progressText.textContent = 'Failed ✗';
+                        progressText.textContent = 'Failed — reload to retry';
                         progressBar.style.width = '100%';
                         progressBar.style.background = '#7f1d1d';
                     }
@@ -2079,7 +2178,14 @@
                 APP_STATE.isOnline = navigator.onLine;
             }
 
-            startup();
+            startup().catch((err) => {
+                console.error('Startup failed:', err);
+                downloadStatus.textContent = 'An unexpected error occurred. Please reload.';
+                progressText.textContent = 'Failed ✗';
+                progressBar.style.width = '100%';
+                progressBar.style.background = '#7f1d1d';
+                clearInterval(verseRotator);
+            });
         })();
     </script>
 </body>

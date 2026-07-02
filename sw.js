@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1.3.0';
+const CACHE_VERSION = 'v1.4.0';
 const APP_SHELL = [
     './',
     './index.html',
@@ -39,7 +39,7 @@ self.addEventListener('fetch', (event) => {
                 .then((response) => {
                     if (response.ok) {
                         const clone = response.clone();
-                        caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, clone));
+                        caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, clone)).catch(() => {});
                     }
                     return response;
                 })
